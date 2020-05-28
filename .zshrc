@@ -172,14 +172,13 @@ prompt_context(){}
 source /usr/share/fzf/shell/key-bindings.zsh
 
 # Search a file with fzf inside a Tmux pane and then open it in an editor
-fzf_then_open_in_editor() {
-  local file=$(fzf-tmux)
-  # Open the file if it exists
-  if [ -n "$file" ]; then
-    # Use the default editor if it's defined, otherwise Vim
-    ${EDITOR:-vim} "$file"
-  fi
-}
-# bind -x '"\C-t: fzf_then_open_in_editor'
+ fzf_then_open_in_editor() {
+   local file=$(fzf-tmux)
+   # Open the file if it exists
+   if [ -n "$file" ]; then
+     # Use the default editor if it's defined, otherwise Vim
+     ${EDITOR:-vim} "$file"
+   fi
+ }
 bindkey -s '^V' 'fzf_then_open_in_editor' # Ctrl + ↑
-#bindkey -s '^[[1;5B' 'cd -\n'  # Ctrl + ↓
+bindkey -s '^[[1;5B' 'cd -\n'  # Ctrl + ↓

@@ -1,6 +1,4 @@
-"let vim:foldmethod=marker:foldlevel=0
-
-" Custom {{{
+"Custom {{{
 let g:python3_host_prog='/home/vignesh/PY3/bin/python'
 " open new split panes to right and below
 set splitright
@@ -34,13 +32,13 @@ nnoremap <leader>O O<esc>j
 nnoremap H ^
 nnoremap L $
 
-"
+" Read changes from file system
 set autoread
-set backspace
 
 " Got this from https://github.com/neoclide/coc.nvim
 set updatetime=300
 set shortmess+=c
+
 " Don't pass messages to |ins-completion-menu|.
 " Always show the signcolumn, otherwise it would shift the text each time
 " diagnostics appear/become resolved.
@@ -48,25 +46,21 @@ set signcolumn=yes
 
 " Show PUM for wild card menu eg. :e <TAB>
 set wildoptions=pum
-
 " }}}
 
 " vim-plug {{{
 call plug#begin()
 
-Plug 'ryanoasis/vim-devicons'
+Plug 'chriskempson/base16-vim'
+Plug 'morhetz/gruvbox'
 
+Plug 'ryanoasis/vim-devicons'
 Plug 'unblevable/quick-scope'
 Plug 'fedorenchik/qt-support.vim'
 
+" Tmux Navigator
 Plug 'christoomey/vim-tmux-navigator'
-
-" For using clangd-format with C/CPP
-Plug 'chiel92/vim-autoformat'
-
-"color scheme
-Plug 'chriskempson/base16-vim'
-Plug 'morhetz/gruvbox'
+Plug 'tmux-plugins/vim-tmux'
 
 " syntax highlighting
 Plug 'peterhoeg/vim-qml'
@@ -76,20 +70,24 @@ Plug 'octol/vim-cpp-enhanced-highlight'
 " auto complete
 "Plug 'Valloric/YouCompleteMe', { 'do': './install.py --clangd-completer' }
 " Plug 'davidhalter/jedi-vim' " Used by YouCompleteMe
-Plug 'nvie/vim-flake8' " pip install flake8 and <F7> key to check py file
 " Plug 'ervandew/supertab' " Just Tab Autocompletion
+
+" For using clangd-format with C/CPP
+Plug 'chiel92/vim-autoformat'
+
+Plug 'nvie/vim-flake8' " pip install flake8 and <F7> key to check py file
 Plug 'SirVer/ultisnips' " snippers are shown for you automatically with [snip]. Use ctrl+y
 Plug 'honza/vim-snippets' " Works with ultisnips to provide a list
 
-" navigation/search file
-" Plug 'scrooloose/nerdtree'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
+Plug 'jremmen/vim-ripgrep'
 Plug 'dkprice/vim-easygrep'
 
 " note
 Plug 'xolox/vim-misc'
 Plug 'xolox/vim-notes'
+
 
 " editing
 Plug 'tpope/vim-commentary'
@@ -105,11 +103,7 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
 
-" QT Console style executable
 Plug 'bfredl/nvim-ipy'
-
-" tmux config
-Plug 'tmux-plugins/vim-tmux'
 
 "Plug 'gabrielelana/vim-markdown'
 "Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } }
@@ -119,26 +113,277 @@ Plug 'plasticboy/vim-markdown'
 Plug 'vim-pandoc/vim-pandoc'
 Plug 'vim-pandoc/vim-pandoc-syntax'
 
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'jremmen/vim-ripgrep'
 Plug 'michaeljsmith/vim-indent-object'
 
 Plug 'jackguo380/vim-lsp-cxx-highlight'
 
 Plug 'vhdirk/vim-cmake'
-
 Plug 'easymotion/vim-easymotion'
 Plug 'jiangmiao/auto-pairs'
+
+"" Remap for do codeAction of selected region
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 call plug#end()
 " }}} vim-plug
 
-" Colors {{{
-let $NVIM_TUI_ENABLE_TRUE_COLOR=1
-syntax enable                " enable syntax processing
-set background=dark
-colorscheme gruvbox
-" }}} Colors
+" Airline {{{
+let g:airline_powerline_fonts = 1
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#buffer_nr_show = 1
+" }}}
+
+" QT Console {{{
+command! -nargs=0 RunQtConsole call jobstart("jupyter qtconsole --ConsoleWidget.font_size=15 --style solarized-dark --JupyterWidget.include_other_output=True")
+
+let g:ipy_celldef = '^##' " regex for cell start and end
+
+nmap <silent> <leader>jqt :RunQtConsole<Enter>
+nmap <silent> <leader>jk :IPython<Space>--existing<Space>--no-window<Enter>
+nmap <silent> <leader>jc <Plug>(IPy-RunCell)
+nmap <silent> <leader>ja <Plug>(IPy-RunAll)
+" }}}
+
+" Cpp Enhanced Highlighting {{{
+let g:cpp_class_scope_highlight = 1
+let g:cpp_class_decl_highlight = 1
+let g:cpp_class_scope_highlight = 1
+let g:cpp_concepts_highlight = 1
+let g:cpp_posix_standard = 1
+let g:cpp_member_variable_highlight = 1
+let g:cpp_experimental_simple_template_highlight = 1
+" }}}
+
+" Flake8 {{{
+let g:flake8_show_in_gutter=1
+let g:flake8_show_in_file=1
+" }}}
+
+" COC.NVIM {{{
+"if &runtimepath =~? 'plugged/neoclide'
+    let g:coc_global_extensions = [
+          \'coc-ultisnips',
+          \'coc-snippets',
+          \'coc-marketplace',
+          \'coc-lists',
+          \'coc-gitignore',
+          \'coc-git',
+          \'coc-explorer',
+          \'coc-actions',
+          \'coc-python',
+          \'coc-json',
+          \'coc-cmake',
+          \'coc-clangd'
+          \]
+
+    function! s:cocActionsOpenFromSelected(type) abort
+        execute 'CocCommand actions.open ' . a:type
+    endfunction
+    xmap <silent> <leader>a :<C-u>execute 'CocCommand actions.open ' . visualmode()<CR>
+    nmap <silent> <leader>a :<C-u>set operatorfunc=<SID>cocActionsOpenFromSelected<CR>g@
+
+    " Use <c-space> to trigger completion.
+    inoremap <silent><expr> <c-space> coc#refresh()
+
+    " Use `[g` and `]g` to navigate diagnostics
+    nmap <silent> [g <Plug>(coc-diagnostic-prev)
+    nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
+    " GoTo code navigation.
+    nmap <silent> gd <Plug>(coc-definition)
+    nmap <silent> gy <Plug>(coc-type-definition)
+    nmap <silent> gi <Plug>(coc-implementation)
+    nmap <silent> gr <Plug>(coc-references)
+
+    " Use K to show documentation in preview window.
+    nnoremap <silent> K :call <SID>show_documentation()<CR>
+    function! s:show_documentation()
+        if (index(['vim','help'], &filetype) >= 0)
+            execute 'h '.expand('<cword>')
+        else
+            call CocAction('doHover')
+        endif
+    endfunction
+
+    " Use tab for trigger completion with characters ahead and navigate.
+    " NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
+    " other plugin before putting this into your config.
+    inoremap <silent><expr> <TAB>
+                \ pumvisible() ? "\<C-n>" :
+                \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
+                \ <SID>check_back_space() ? "\<TAB>" :
+                \ coc#refresh()
+    inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+    function! s:check_back_space() abort
+        let col = col('.') - 1
+        return !col || getline('.')[col - 1]  =~# '\s'
+    endfunction
+
+    " <CR> - select the first completion item and confirm the completion when no item has been selected
+    inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() : "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
+    " Highlight the symbol and its references when holding the cursor.
+    autocmd! CursorHold * call CocActionAsync('highlight')
+
+    " Symbol renaming.
+    nmap <leader>rn <Plug>(coc-rename)
+
+    " Formatting selected code.
+    xmap <leader>f  <Plug>(coc-format-selected)
+    nmap <leader>f  <Plug>(coc-format-selected)
+
+    augroup mygroup
+        autocmd!
+        " Update signature help on jump placeholder.
+        autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+    augroup end
+
+    " Applying codeAction to the selected region.
+    " Example: `<leader>aap` for current paragraph
+    xmap <leader>a  <Plug>(coc-codeaction-selected)
+    nmap <leader>a  <Plug>(coc-codeaction-selected)
+
+    " Remap keys for applying codeAction to the current line.
+    nmap <leader>ac  <Plug>(coc-codeaction)
+
+    " Apply AutoFix to problem on the current line.
+    nmap <space>f  <Plug>(coc-fix-current)
+
+    " Map function and class text objects
+    " NOTE: Requires 'textDocument.documentSymbol' support from the language server.
+    xmap if <Plug>(coc-funcobj-i)
+    omap if <Plug>(coc-funcobj-i)
+    xmap af <Plug>(coc-funcobj-a)
+    omap af <Plug>(coc-funcobj-a)
+    xmap ic <Plug>(coc-classobj-i)
+    omap ic <Plug>(coc-classobj-i)
+    xmap ac <Plug>(coc-classobj-a)
+    omap ac <Plug>(coc-classobj-a)
+
+    " Use CTRL-S for selections ranges.
+    " Requires 'textDocument/selectionRange' support of LS, ex: coc-tsserver
+    nmap <silent> <C-s> <Plug>(coc-range-select)
+    xmap <silent> <C-s> <Plug>(coc-range-select)
+
+    " Add `:Format` command to format current buffer.
+    command! -nargs=0 Format :call CocAction('format')
+
+    " Add `:Fold` command to fold current buffer.
+    command! -nargs=? Fold :call     CocAction('fold', <f-args>)
+
+    " Add `:OR` command for organize imports of the current buffer.
+    command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
+
+    " Mappings using CoCList:
+    " Show all diagnostics.
+    nnoremap <silent> <space>a  :<C-u>CocList diagnostics<cr>
+    " Manage extensions.
+    nnoremap <silent> <space>e  :<C-u>CocList extensions<cr>
+    " Install Extensions.
+    nnoremap <silent> <space>m  :<C-u>CocList marketplace<cr>
+    " Show commands.
+    nnoremap <silent> <space>c  :<C-u>CocList commands<cr>
+    " Find symbol of current document.
+    nnoremap <silent> <space>o  :<C-u>CocList outline<cr>
+    " Search workspace symbols.
+    nnoremap <silent> <space>s  :<C-u>CocList -I symbols<cr>
+    " Do default action for next item.
+    nnoremap <silent> <space>j  :<C-u>CocNext<CR>
+    " Do default action for previous item.
+    nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
+    " Resume latest coc list.
+    nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
+
+    " Key-Maps for coc-ultisnips """"""""""""""""""""""""""""""""""""
+    " ***** <C-j> ******** is the right place for everything
+    " Use <C-l> for trigger snippet expand.
+    " imap <C-l> <Plug>(coc-snippets-expand)
+
+    " <C-j> is the right place for everything
+    " Use <C-j> for select text for visual placeholder of snippet.
+    " vmap <C-j> <Plug>(coc-snippets-select)
+
+    " Use <C-j> for jump to next placeholder, it's default of coc.nvim
+    let g:coc_snippet_next = '<c-l>'
+
+    " Use <C-k> for jump to previous placeholder, it's default of coc.nvim
+    let g:coc_snippet_prev = '<c-h>'
+
+    " Use <C-j> for both expand and jump (make expand higher priority.)
+    "imap <C-j> <Plug>(coc-snippets-expand-jump)
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+    " coc-explorer
+    nmap <C-n> :CocCommand explorer<CR>
+
+"endif
+" }}}
+
+" UltiSnips {{{
+let g:UltiSnipsExpandTrigger       = "<c-j>"
+let g:UltiSnipsJumpForwardTrigger  = "<c-j>"
+let g:UltiSnipsJumpBackwardTrigger = "<c-p>"
+let g:UltiSnipsListSnippets        = "<c-k>" "List possible snippets based on current file
+let g:UltiSnipsUsePythonVersion = 3
+" }}}
+
+" FZF {{{
+let g:rg_command = 'rg --vimgrep -S'
+" Make FZF use rg. THis makes it extremely fast
+let $FZF_DEFAULT_COMMAND = 'rg -l --smart-case ""'
+
+" THis is for :Rg command
+command! -bang -nargs=* Rg
+  \ call fzf#vim#grep(
+  \   'rg --column --line-number --no-heading --colors "path:fg:190,220,255" --colors "line:fg:128,128,128" --smart-case '.shellescape(<q-args>), 1, { 'options': '--color hl:123,hl+:222' }, 0)
+
+"
+if &runtimepath =~? 'fzf.vim'
+    augroup hide_fzf_statusline
+        autocmd! FileType fzf
+        autocmd  FileType fzf set laststatus=0 noruler
+                    \| autocmd BufLeave <buffer> set laststatus=2 ruler
+    augroup END
+
+    " Jump to existing window if possible
+    let g:fzf_buffers_jump = 1
+
+    nnoremap <c-p> :Files<CR>
+    let g:fzf_action = {
+                \ 'ctrl-t': 'tab split',
+                \ 'ctrl-s': 'split',
+                \ 'ctrl-v': 'vsplit'
+                \}
+
+    " mappings
+    " nnoremap <C-f> :BLines<CR>
+    nnoremap <C-b> :Buffers<CR>
+    nnoremap <C-c> :Commands<CR>
+
+    " don't highlight the current line and selection column
+    let g:fzf_colors = {'bg+': ['bg', 'Normal']}
+endif
+" }}}
+
+" {{{ colorscheme
+if &runtimepath =~? 'plugged/gruvbox'
+    let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+    syntax enable                " enable syntax processing
+    set background=dark
+
+    let g:gruvbox_italic = 1
+    let g:gruvbox_sign_column='bg0'
+    let g:airline_theme='gruvbox'
+
+    colorscheme gruvbox  " must come after gruvbox_italic
+
+    " match the fold column colors to the line number column
+    " must come after colorscheme gruvbox
+    highlight clear FoldColumn
+    highlight! link FoldColumn LineNr
+endif
+" }}}
 
 " Spaces & Tabs {{{
 set tabstop=4       " number of visual spaces per TAB
@@ -151,7 +396,7 @@ set copyindent      " copy indent from the previous line
 
 " Clipboard {{{
 set clipboard+=unnamedplus
-" }}} Clipboard
+" }}}
 
 " UI Config {{{
 set hidden
@@ -169,8 +414,7 @@ set noswapfile
 " Trigger a highlight in the appropriate direction when pressing these keys:
 
 " let &colorcolumn="80,".join(range(119,999),",")
-" }}} UI Config
-
+" }}}
 
 " Search {{{
 set incsearch       " search as characters are entered
@@ -196,7 +440,7 @@ if executable('rg')
     set grepformat=%f:%l:%c:%m,%f:%l:%m
     "set grepformat=%f:%l:%c%m
 endif
-" }}} Search
+" }}}
 
 " Folding {{{
 set foldenable
@@ -325,296 +569,6 @@ autocmd FileType cmake set formatprg=clang-format
 
 " }}}
 
-" COC.NVIM {{{
-"" Remap for do codeAction of selected region
-let g:coc_global_extensions = [
-      \'coc-ultisnips',
-      \'coc-snippets',
-      \'coc-marketplace',
-      \'coc-lists',
-      \'coc-gitignore',
-      \'coc-git',
-      \'coc-explorer',
-      \'coc-actions',
-      \'coc-python',
-      \'coc-json',
-      \'coc-cmake',
-      \'coc-clangd'
-      \]
-
-function! s:cocActionsOpenFromSelected(type) abort
-    execute 'CocCommand actions.open ' . a:type
-endfunction
-xmap <silent> <leader>a :<C-u>execute 'CocCommand actions.open ' . visualmode()<CR>
-nmap <silent> <leader>a :<C-u>set operatorfunc=<SID>cocActionsOpenFromSelected<CR>g@
-
-" Use <c-space> to trigger completion.
-inoremap <silent><expr> <c-space> coc#refresh()
-
-" Use `[g` and `]g` to navigate diagnostics
-nmap <silent> [g <Plug>(coc-diagnostic-prev)
-nmap <silent> ]g <Plug>(coc-diagnostic-next)
-
-" GoTo code navigation.
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
-
-" Use K to show documentation in preview window.
-nnoremap <silent> K :call <SID>show_documentation()<CR>
-function! s:show_documentation()
-    if (index(['vim','help'], &filetype) >= 0)
-        execute 'h '.expand('<cword>')
-    else
-        call CocAction('doHover')
-    endif
-endfunction
-
-" Use tab for trigger completion with characters ahead and navigate.
-" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
-" other plugin before putting this into your config.
-inoremap <silent><expr> <TAB>
-            \ pumvisible() ? "\<C-n>" :
-            \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
-            \ <SID>check_back_space() ? "\<TAB>" :
-            \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-function! s:check_back_space() abort
-    let col = col('.') - 1
-    return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-
-" <CR> - select the first completion item and confirm the completion when no item has been selected
-inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() : "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-
-" Highlight the symbol and its references when holding the cursor.
-autocmd! CursorHold * call CocActionAsync('highlight')
-
-" Symbol renaming.
-nmap <leader>rn <Plug>(coc-rename)
-
-" Formatting selected code.
-xmap <leader>f  <Plug>(coc-format-selected)
-nmap <leader>f  <Plug>(coc-format-selected)
-
-augroup mygroup
-    autocmd!
-    " Update signature help on jump placeholder.
-    autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
-augroup end
-
-" Applying codeAction to the selected region.
-" Example: `<leader>aap` for current paragraph
-xmap <leader>a  <Plug>(coc-codeaction-selected)
-nmap <leader>a  <Plug>(coc-codeaction-selected)
-
-" Remap keys for applying codeAction to the current line.
-nmap <leader>ac  <Plug>(coc-codeaction)
-
-" Apply AutoFix to problem on the current line.
-nmap <space>f  <Plug>(coc-fix-current)
-
-" Map function and class text objects
-" NOTE: Requires 'textDocument.documentSymbol' support from the language server.
-xmap if <Plug>(coc-funcobj-i)
-omap if <Plug>(coc-funcobj-i)
-xmap af <Plug>(coc-funcobj-a)
-omap af <Plug>(coc-funcobj-a)
-xmap ic <Plug>(coc-classobj-i)
-omap ic <Plug>(coc-classobj-i)
-xmap ac <Plug>(coc-classobj-a)
-omap ac <Plug>(coc-classobj-a)
-
-" Use CTRL-S for selections ranges.
-" Requires 'textDocument/selectionRange' support of LS, ex: coc-tsserver
-nmap <silent> <C-s> <Plug>(coc-range-select)
-xmap <silent> <C-s> <Plug>(coc-range-select)
-
-" Add `:Format` command to format current buffer.
-command! -nargs=0 Format :call CocAction('format')
-
-" Add `:Fold` command to fold current buffer.
-command! -nargs=? Fold :call     CocAction('fold', <f-args>)
-
-" Add `:OR` command for organize imports of the current buffer.
-command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
-
-" Mappings using CoCList:
-" Show all diagnostics.
-nnoremap <silent> <space>a  :<C-u>CocList diagnostics<cr>
-" Manage extensions.
-nnoremap <silent> <space>e  :<C-u>CocList extensions<cr>
-" Install Extensions.
-nnoremap <silent> <space>m  :<C-u>CocList marketplace<cr>
-" Show commands.
-nnoremap <silent> <space>c  :<C-u>CocList commands<cr>
-" Find symbol of current document.
-nnoremap <silent> <space>o  :<C-u>CocList outline<cr>
-" Search workspace symbols.
-nnoremap <silent> <space>s  :<C-u>CocList -I symbols<cr>
-" Do default action for next item.
-nnoremap <silent> <space>j  :<C-u>CocNext<CR>
-" Do default action for previous item.
-nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
-" Resume latest coc list.
-nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
-
-" Key-Maps for coc-ultisnips """"""""""""""""""""""""""""""""""""
-" ***** <C-j> ******** is the right place for everything
-" Use <C-l> for trigger snippet expand.
-" imap <C-l> <Plug>(coc-snippets-expand)
-
-" <C-j> is the right place for everything
-" Use <C-j> for select text for visual placeholder of snippet.
-" vmap <C-j> <Plug>(coc-snippets-select)
-
-" Use <C-j> for jump to next placeholder, it's default of coc.nvim
-let g:coc_snippet_next = '<c-l>'
-
-" Use <C-k> for jump to previous placeholder, it's default of coc.nvim
-let g:coc_snippet_prev = '<c-h>'
-
-" Use <C-j> for both expand and jump (make expand higher priority.)
-"imap <C-j> <Plug>(coc-snippets-expand-jump)
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" coc-explorer
-nmap <C-n> :CocCommand explorer<CR>
-
-" }}}
-
-" Disabled YCM {{{
-" YCM mappings {{{
-" nnoremap <leader>g :YcmCompleter GoTo<CR>
-" }}}
-
-" YCM {{{
-"let g:ycm_server_keep_logfiles = 1
-"let g:ycm_server_log_level = 'debug'
-let g:ycm_filetype_specific_completion_to_disable = {
-            \ 'gitcommit': 1,
-            \ 'cpp' : 1
-            \}
-let g:ycm_complete_in_comments = 1
-let g:ycm_complete_in_strings = 1
-let g:ycm_use_ultisnips_completer = 1 " Default 1, just ensure
-let g:ycm_seed_identifiers_with_syntax = 1 " Completion for programming language's
-
-let g:ycm_autoclose_preview_window_after_insertion = 1
-let g:ycm_autoclose_preview_window_after_completion = 1
-
-" https://clangd.llvm.org/installation.html#installing-clangd
-"  <------------------------- NOTE TO VIGNESH ------------------------------->
-" NOTE:  You have to install clangd to get this working `sudo dnf install clangd` or
-" clandg will be in a package. Just type clangd and let fedora do the job
-" After that inside YcmCompleteMe directory, use 'python install.py
-" --clangd-completer' => verify the command line option
-"
-" Let clangd fully control code completion
-let g:ycm_clangd_uses_ycmd_caching = 0
-
-" Use installed clangd, not YCM-bundled clangd which doesn't get updates.
-let g:ycm_clangd_binary_path = exepath("clangd")
-
-let g:ycm_global_ycm_extra_conf = '~/.config/nvim/ycm_extra_conf.py'
-
-" }}}
-" }}}
-
-" Cpp Enhanced Highlighting {{{
-let g:cpp_class_scope_highlight = 1
-let g:cpp_class_decl_highlight = 1
-let g:cpp_class_scope_highlight = 1
-let g:cpp_concepts_highlight = 1
-let g:cpp_posix_standard = 1
-let g:cpp_member_variable_highlight = 1
-let g:cpp_experimental_simple_template_highlight = 1
-" }}}
-
-" Airline {{{
-let g:airline_powerline_fonts = 1
-let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#tabline#buffer_nr_show = 1
-" }}}
-
-" Vimgrep {{{
-let g:rg_command = 'rg --vimgrep -S'
-" }}}
-
-" Gruvbox {{{
-" --- gruvbox ---
-if &runtimepath =~? 'plugged/gruvbox'
-  let g:gruvbox_italic = 1
-  let g:gruvbox_sign_column='bg0'
-  let g:airline_theme='gruvbox'
-
-  colorscheme gruvbox  " must come after gruvbox_italic
-
-  " match the fold column colors to the line number column
-  " must come after colorscheme gruvbox
-  highlight clear FoldColumn
-  highlight! link FoldColumn LineNr
-endif
-" }}}
-
-
-" FZF {{{
-" Make FZF use rg. THis makes it extremely fast
-let $FZF_DEFAULT_COMMAND = 'rg -l --smart-case ""'
-
-" THis is for :Rg command
-command! -bang -nargs=* Rg
-  \ call fzf#vim#grep(
-  \   'rg --column --line-number --no-heading --colors "path:fg:190,220,255" --colors "line:fg:128,128,128" --smart-case '.shellescape(<q-args>), 1, { 'options': '--color hl:123,hl+:222' }, 0)
-
-"
-if &runtimepath =~? 'fzf.vim'
-    augroup hide_fzf_statusline
-        autocmd! FileType fzf
-        autocmd  FileType fzf set laststatus=0 noruler
-                    \| autocmd BufLeave <buffer> set laststatus=2 ruler
-    augroup END
-
-    " Jump to existing window if possible
-    let g:fzf_buffers_jump = 1
-
-    nnoremap <c-p> :Files<CR>
-    let g:fzf_action = {
-                \ 'ctrl-t': 'tab split',
-                \ 'ctrl-s': 'split',
-                \ 'ctrl-v': 'vsplit'
-                \}
-
-    " mappings
-    " nnoremap <C-f> :BLines<CR>
-    nnoremap <C-b> :Buffers<CR>
-    nnoremap <C-c> :Commands<CR>
-
-    " don't highlight the current line and selection column
-    let g:fzf_colors = {'bg+': ['bg', 'Normal']}
-endif
-" }}}
-
-
-" UltiSnips {{{
-let g:UltiSnipsExpandTrigger       = "<c-j>"
-let g:UltiSnipsJumpForwardTrigger  = "<c-j>"
-let g:UltiSnipsJumpBackwardTrigger = "<c-p>"
-let g:UltiSnipsListSnippets        = "<c-k>" "List possible snippets based on current file
-let g:UltiSnipsUsePythonVersion = 3
-" }}}
-
-" Flake8 {{{
-let g:flake8_show_in_gutter=1
-let g:flake8_show_in_file=1
-" }}}
-
-" Vim-Devicons {{{
-let g:webdevicons_enable_ctrlp = 1
-" }}}
-
 " Functions {{{
 " trailing whitespace
 match ErrorMsg '\s\+$'
@@ -622,15 +576,4 @@ function! TrimWhiteSpace()
     %s/\s\+$//e
 endfunction
 autocmd BufWritePre * :call TrimWhiteSpace()
-" }}}
-
-" QT Console {{{
-command! -nargs=0 RunQtConsole call jobstart("jupyter qtconsole --ConsoleWidget.font_size=15 --style solarized-dark --JupyterWidget.include_other_output=True")
-
-let g:ipy_celldef = '^##' " regex for cell start and end
-
-nmap <silent> <leader>jqt :RunQtConsole<Enter>
-nmap <silent> <leader>jk :IPython<Space>--existing<Space>--no-window<Enter>
-nmap <silent> <leader>jc <Plug>(IPy-RunCell)
-nmap <silent> <leader>ja <Plug>(IPy-RunAll)
 " }}}
