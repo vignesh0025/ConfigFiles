@@ -1,5 +1,12 @@
 "Custom {{{
 let g:python3_host_prog='/home/vignesh/PY3/bin/python'
+
+if &compatible
+  set nocompatible
+endif
+
+syntax enable                " enable syntax processing
+
 " open new split panes to right and below
 set splitright
 set splitbelow
@@ -23,10 +30,10 @@ nnoremap <leader>o o<esc>k
 nnoremap <leader>O O<esc>j
 
 " I'm bad at typing.
-:command! Q q
-:command! W w
-:command! WQ wq
-:command! Wq wq
+command! Q q
+command! W w
+command! WQ wq
+command! Wq wq
 
 " nav to begin and end of line (rather than buffer) with H/L
 nnoremap H ^
@@ -50,6 +57,7 @@ set wildoptions=pum
 
 " vim-plug {{{
 call plug#begin()
+Plug 'haya14busa/incsearch.vim'
 
 Plug 'chriskempson/base16-vim'
 Plug 'morhetz/gruvbox'
@@ -87,7 +95,6 @@ Plug 'dkprice/vim-easygrep'
 " note
 Plug 'xolox/vim-misc'
 Plug 'xolox/vim-notes'
-
 
 " editing
 Plug 'tpope/vim-commentary'
@@ -179,8 +186,8 @@ let g:flake8_show_in_file=1
     function! s:cocActionsOpenFromSelected(type) abort
         execute 'CocCommand actions.open ' . a:type
     endfunction
-    xmap <silent> <leader>a :<C-u>execute 'CocCommand actions.open ' . visualmode()<CR>
-    nmap <silent> <leader>a :<C-u>set operatorfunc=<SID>cocActionsOpenFromSelected<CR>g@
+    xmap <silent> <space>a :<C-u>execute 'CocCommand actions.open ' . visualmode()<CR>
+    nmap <silent> <space>a :<C-u>set operatorfunc=<SID>cocActionsOpenFromSelected<CR>g@
 
     " Use <c-space> to trigger completion.
     inoremap <silent><expr> <c-space> coc#refresh()
@@ -277,7 +284,7 @@ let g:flake8_show_in_file=1
 
     " Mappings using CoCList:
     " Show all diagnostics.
-    nnoremap <silent> <space>a  :<C-u>CocList diagnostics<cr>
+    nnoremap <silent> <space>i  :<C-u>CocList diagnostics<cr>
     " Manage extensions.
     nnoremap <silent> <space>e  :<C-u>CocList extensions<cr>
     " Install Extensions.
@@ -369,14 +376,21 @@ endif
 " {{{ colorscheme
 if &runtimepath =~? 'plugged/gruvbox'
     let $NVIM_TUI_ENABLE_TRUE_COLOR=1
-    syntax enable                " enable syntax processing
-    set background=dark
+    let g:gruvbox_contrast_dark='medium'
+    let g:gruvbox_contrast_light='soft'
+
+    if strftime("%H") < 18 && strftime("%H") > 9
+      set background=light
+    else
+      set background=dark
+    endif
 
     let g:gruvbox_italic = 1
     let g:gruvbox_sign_column='bg0'
     let g:airline_theme='gruvbox'
 
-    colorscheme gruvbox  " must come after gruvbox_italic
+    colorscheme gruvbox
+    "colorscheme gruvbox  " must come after gruvbox_italic
 
     " match the fold column colors to the line number column
     " must come after colorscheme gruvbox
@@ -418,7 +432,7 @@ set noswapfile
 
 " Search {{{
 set incsearch       " search as characters are entered
-set nohlsearch        " highlight matches
+set hlsearch        " highlight matches
 set ignorecase      " ignore case when searching
 set smartcase       " ignore case if search pattern is lower case
 " case-sensitive otherwise
@@ -500,8 +514,6 @@ nnoremap <Leader>8 :8b<CR>
 nnoremap <Leader>9 :9b<CR>
 nnoremap <Leader>0 :10b<CR>
 
-
-
 " split navigation
 nnoremap <c-j> <c-w><c-j>
 nnoremap <c-k> <c-w><c-k>
@@ -577,3 +589,15 @@ function! TrimWhiteSpace()
 endfunction
 autocmd BufWritePre * :call TrimWhiteSpace()
 " }}}
+
+" incsearch {{{
+" This requires `set hlsearch` which is set above
+let g:incsearch#auto_nohlsearch = 1
+map n  <Plug>(incsearch-nohl-n)
+map N  <Plug>(incsearch-nohl-N)
+map *  <Plug>(incsearch-nohl-*)
+map #  <Plug>(incsearch-nohl-#)
+map g* <Plug>(incsearch-nohl-g*)
+map g# <Plug>(incsearch-nohl-g#)"
+" }}}
+
