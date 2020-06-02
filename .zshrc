@@ -1,15 +1,11 @@
-autoload -Uz compinit
-compinit
-# Completion for kitty
-kitty + complete setup zsh | source /dev/stdin
-#zsh -xv &> >(tee ~/omz-debug.log 2>/dev/null)
-#zsh -xvic exit &> ~/omz-debug.log
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-#if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-#  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-#fi
+# WSL Specific Settings
+source ~/.env_detect.sh
+
+if [ -z "$ENV_WSL" ]|| [ $ENV_WSL -eq "0" ]; then
+    compinit
+    kitty + complete setup zsh | source /dev/stdin
+    source /usr/libexec/z.sh
+fi
 
 # If you come from bash you might have to change your $PATH.
 export PATH=$HOME/bin:$PATH
@@ -129,11 +125,7 @@ set noautocd
 export EDITOR='nvim'
 alias vi='nvim'
 alias vim='nvim'
-alias grep='grep --color=always'
-# NOTE: config defined in ~/.ripgreprc
-alias rg='rg --color=always --smart-case --hidden --vimgrep'
 alias ls='ls --human-readable'
-#
 
 export EDITOR='/usr/bin/nvim'
 
@@ -143,19 +135,16 @@ export EDITOR='/usr/bin/nvim'
 export SDKMAN_DIR="/home/vignesh/.sdkman"
 [[ -s "/home/vignesh/.sdkman/bin/sdkman-init.sh" ]] && source "/home/vignesh/.sdkman/bin/sdkman-init.sh"
 
-source /usr/libexec/z.sh
 source /home/vignesh/.config/nvim/plugged/gruvbox/gruvbox_256palette.sh
 source ~/PY3/bin/activate
 
-export FZF_DEFAULT_COMMAND='fzf --ansi --preview "cat {}"'
+export FZF_DEFAULT_COMMAND='rg --files --no-ignore-vcs --hidden '
+export FZF_DEFAULT_OPTS='--preview "cat {}"'
+
+export RIPGREP_CONFIG_PATH='/home/vignesh/ConfigFiles/.ripgreprc'
 
 # export ANDROID_HOME=/home/vignesh/Downloads/android_sdk
 # export ANDROID_NDK_ROOT=/home/vignesh/Downloads/android_sdk/ndk-bundle
-
-#
-#can install it from the official repository : https://github.com/seebi/dircolors-solarized
-
-#The new dircolors have been installed as /home/vignesh/.dir_colors/dircolors.
 
 # My Own Utils
 # ripgrep - rg - grep alternative
@@ -169,8 +158,9 @@ export FZF_DEFAULT_COMMAND='fzf --ansi --preview "cat {}"'
 # Hide username@pc from agnoster theme
 prompt_context(){}
 
-source /usr/share/fzf/shell/key-bindings.zsh
-
+if [ -z "$ENV_WSL" ]|| [ $ENV_WSL -eq "0" ]; then
+    source /usr/share/fzf/shell/key-bindings.zsh
+fi
 # Search a file with fzf inside a Tmux pane and then open it in an editor
  fzf_then_open_in_editor() {
    local file=$(fzf-tmux)
@@ -181,4 +171,4 @@ source /usr/share/fzf/shell/key-bindings.zsh
    fi
  }
 bindkey -s '^V' 'fzf_then_open_in_editor' # Ctrl + ↑
-bindkey -s '^[[1;5B' 'cd -\n'  # Ctrl + ↓
+

@@ -1,0 +1,6 @@
+--color=always
+--smart-case
+--hidden
+--vimgrep
+--max-columns=80
+--max-columns-preview
