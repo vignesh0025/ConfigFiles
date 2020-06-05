@@ -25,12 +25,6 @@
 # Online reference: https://github.com/SirVer/ultisnips/blob/master/doc/UltiSnips.txt
 
 snippet cmake_llvm "Use LLVM in place of GCC" b
-cmake_minimum_required(VERSION 3.16)
-
-project(MyProject)
-
-set(CXX_STANDARD c++17)
-set(CMAKE_BUILD_TYPE Debug)
 
 SET (CMAKE_C_COMPILER             "/usr/bin/clang")
 SET (CMAKE_C_FLAGS                "-Wall -std=c99")
@@ -52,8 +46,16 @@ SET (CMAKE_NM      "/usr/bin/llvm-nm-10")
 SET (CMAKE_OBJDUMP "/usr/bin/llvm-objdump-10")
 SET (CMAKE_RANLIB  "/usr/bin/llvm-ranlib-10")
 
-add_library(String String.cpp)
+endsnippet
 
-add_executable(main main.cpp)
-target_link_libraries(main String)
+snippet cmake_cppxx "Use CPP standardxx" b
+SET(CMAKE_CXX_STANDARD ${1})
+endsnippet
+
+snippet cmake_debug_type "Include cmake Debug/Release" b
+SET(CMAKE_BUILD_TYPE ${1})
+endsnippet
+
+snippet cmake_compile_commands "Export compile commands" b
+SET(CMAKE_EXPORT_COMPILE_COMMANDS ON )
 endsnippet

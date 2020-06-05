@@ -1,5 +1,5 @@
 {
-    "python.jediEnabled": false,
+    "python.jediEnabled": true,
     "python.pythonPath": "/home/vignesh/PY3/bin/python",
     "clangd.checkUpdates": true,
     "clangd.semanticHighlighting": true,
@@ -7,5 +7,11 @@
     "explorer.keyMappings": {
         "v": "open:vsplit"
     },
-    "explorer.icon.enableNerdfont":true
+    "explorer.icon.enableNerdfont":true,
+    "explorer.position": "right",
+    "snippets.enableStatusItem": true,
+    "snippets.ultisnips.directories": [
+        "UltiSnips",
+        "vim-snippets/UltiSnips"
+    ]
 }

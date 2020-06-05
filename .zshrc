@@ -1,4 +1,3 @@
-# WSL Specific Settings
 source ~/.env_detect.sh
 
 if [ -z "$ENV_WSL" ]|| [ $ENV_WSL -eq "0" ]; then
@@ -124,7 +123,6 @@ set noautocd
 
 export EDITOR='nvim'
 alias vi='nvim'
-alias vim='nvim'
 alias ls='ls --human-readable'
 
 export EDITOR='/usr/bin/nvim'
@@ -139,7 +137,7 @@ source /home/vignesh/.config/nvim/plugged/gruvbox/gruvbox_256palette.sh
 source ~/PY3/bin/activate
 
 export FZF_DEFAULT_COMMAND='rg --files --no-ignore-vcs --hidden '
-export FZF_DEFAULT_OPTS='--preview "cat {}"'
+export FZF_DEFAULT_OPTS='--preview "bat {}"'
 
 export RIPGREP_CONFIG_PATH='/home/vignesh/ConfigFiles/.ripgreprc'
 
