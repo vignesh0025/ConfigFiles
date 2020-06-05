@@ -1,6 +1,6 @@
 # ConfigFiles
 
-## Contains Configuratiion for the following:
+## Contains Configuration for the following:
     * ZSH
     * Tmux
     * Kitty
