@@ -1,3 +1,11 @@
+" Fold Settings {{{
+augroup filetype_vim
+ " This is used to clear the group
+autocmd!
+autocmd FileType vim setlocal foldmethod=marker foldlevel=0
+augroup END
+" }}}
+
 "Custom {{{
 let g:python3_host_prog='/home/vignesh/PY3/bin/python'
 
@@ -6,6 +14,8 @@ if &compatible
 endif
 
 syntax enable                " enable syntax processing
+
+set textwidth=80 " Set linewidth to existing using `gq`
 
 " open new split panes to right and below
 set splitright
@@ -23,6 +33,9 @@ set sidescrolloff=5
 autocmd FileType python map <buffer> <F5> :w<CR>:exec '!python3' shellescape(@%, 1)<CR>
 autocmd FileType python imap <buffer> <F5> <esc>:w<CR>:exec '!python3' shellescape(@%, 1)<CR>
 
+" Disable minimise
+nnoremap <c-z> <nop>
+
 vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '>-2<CR>gv=gv
 
@@ -34,10 +47,6 @@ command! Q q
 command! W w
 command! WQ wq
 command! Wq wq
-
-" nav to begin and end of line (rather than buffer) with H/L
-nnoremap H ^
-nnoremap L $
 
 " Read changes from file system
 set autoread
@@ -52,11 +61,15 @@ set shortmess+=c
 set signcolumn=yes
 
 " Show PUM for wild card menu eg. :e <TAB>
-set wildoptions=pum
+if has('nvim')
+    set wildoptions=pum
+endif
 " }}}
 
 " vim-plug {{{
-call plug#begin()
+call plug#begin('~/.config/nvim/plugged')
+
+Plug 'vignesh0025/vim-cmake'
 Plug 'haya14busa/incsearch.vim'
 
 Plug 'chriskempson/base16-vim'
@@ -82,9 +95,7 @@ Plug 'octol/vim-cpp-enhanced-highlight'
 
 " For using clangd-format with C/CPP
 Plug 'chiel92/vim-autoformat'
-
 Plug 'nvie/vim-flake8' " pip install flake8 and <F7> key to check py file
-Plug 'SirVer/ultisnips' " snippers are shown for you automatically with [snip]. Use ctrl+y
 Plug 'honza/vim-snippets' " Works with ultisnips to provide a list
 
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
@@ -124,9 +135,8 @@ Plug 'michaeljsmith/vim-indent-object'
 
 Plug 'jackguo380/vim-lsp-cxx-highlight'
 
-Plug 'vhdirk/vim-cmake'
+" Plug 'vhdirk/vim-cmake'
 Plug 'easymotion/vim-easymotion'
-Plug 'jiangmiao/auto-pairs'
 
 "" Remap for do codeAction of selected region
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
@@ -134,21 +144,19 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 call plug#end()
 " }}} vim-plug
 
+" Auto Pairs {{{
+inoremap (; ();<C-c>hi
+inoremap (, (),<C-c>hi
+inoremap {; {<CR>};<C-c>O
+inoremap {, {<CR>},<C-c>O
+inoremap [; [<CR>];<C-c>O
+inoremap [, [<CR>],<C-c>O
+" }}}
+
 " Airline {{{
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#buffer_nr_show = 1
-" }}}
-
-" QT Console {{{
-command! -nargs=0 RunQtConsole call jobstart("jupyter qtconsole --ConsoleWidget.font_size=15 --style solarized-dark --JupyterWidget.include_other_output=True")
-
-let g:ipy_celldef = '^##' " regex for cell start and end
-
-nmap <silent> <leader>jqt :RunQtConsole<Enter>
-nmap <silent> <leader>jk :IPython<Space>--existing<Space>--no-window<Enter>
-nmap <silent> <leader>jc <Plug>(IPy-RunCell)
-nmap <silent> <leader>ja <Plug>(IPy-RunAll)
 " }}}
 
 " Cpp Enhanced Highlighting {{{
@@ -346,6 +354,35 @@ command! -bang -nargs=* Rg
   \   'rg --column --line-number --no-heading --colors "path:fg:190,220,255" --colors "line:fg:128,128,128" --smart-case '.shellescape(<q-args>), 1, { 'options': '--color hl:123,hl+:222' }, 0)
 
 "
+
+" {{{ colorscheme
+if &runtimepath =~? 'plugged/gruvbox'
+    let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+    let g:gruvbox_contrast_dark='medium'
+    let g:gruvbox_contrast_light='soft'
+
+    " if strftime("%H") < 18 && strftime("%H") > 9
+    "   set background=light
+    " else
+    set background=dark
+    " endif
+
+    let g:gruvbox_italic = 1
+    let g:gruvbox_sign_column='bg0'
+    let g:airline_theme='gruvbox'
+
+    colorscheme gruvbox
+    "colorscheme gruvbox  " must come after gruvbox_italic
+
+    " match the fold column colors to the line number column
+    " must come after colorscheme gruvbox
+    highlight clear FoldColumn
+    highlight! link FoldColumn LineNr
+
+    hi Normal guibg=NONE ctermbg=NONE
+endif
+" }}}
+
 if &runtimepath =~? 'fzf.vim'
     augroup hide_fzf_statusline
         autocmd! FileType fzf
@@ -365,37 +402,15 @@ if &runtimepath =~? 'fzf.vim'
 
     " mappings
     " nnoremap <C-f> :BLines<CR>
+
+    nnoremap <F2> :Commands<CR>
+    nnoremap <F3> :Buffer<CR>
     nnoremap <C-b> :Buffers<CR>
-    nnoremap <C-c> :Commands<CR>
+    nnoremap <F6> :Maps<CR>
+    nnoremap <F12> :BCommits<CR>
 
     " don't highlight the current line and selection column
     let g:fzf_colors = {'bg+': ['bg', 'Normal']}
-endif
-" }}}
-
-" {{{ colorscheme
-if &runtimepath =~? 'plugged/gruvbox'
-    let $NVIM_TUI_ENABLE_TRUE_COLOR=1
-    let g:gruvbox_contrast_dark='medium'
-    let g:gruvbox_contrast_light='soft'
-
-    if strftime("%H") < 18 && strftime("%H") > 9
-      set background=light
-    else
-      set background=dark
-    endif
-
-    let g:gruvbox_italic = 1
-    let g:gruvbox_sign_column='bg0'
-    let g:airline_theme='gruvbox'
-
-    colorscheme gruvbox
-    "colorscheme gruvbox  " must come after gruvbox_italic
-
-    " match the fold column colors to the line number column
-    " must come after colorscheme gruvbox
-    highlight clear FoldColumn
-    highlight! link FoldColumn LineNr
 endif
 " }}}
 
@@ -403,12 +418,30 @@ endif
 set tabstop=4       " number of visual spaces per TAB
 set softtabstop=4   " number of spaces in tab when editing
 set shiftwidth=4    " number of spaces to use for autoindent
+set shiftround
 set expandtab       " tabs are space
 set autoindent
 set copyindent      " copy indent from the previous line
 " }}} Spaces & Tabs
 
 " Clipboard {{{
+
+if $ENV_WSL == 1
+" Download from here https://github.com/equalsraf/win32yank/releases
+let g:clipboard = {
+         \   'name': 'unnamedplus',
+         \   'copy': {
+         \      '+': 'win32yank.exe -i --crlf',
+         \      '*': 'win32yank.exe -i --crlf',
+         \    },
+         \   'paste': {
+         \      '+': 'win32yank.exe -o --lf',
+         \      '*': 'win32yank.exe -o --lf',
+         \   },
+         \   'cache_enabled': 1,
+         \ }
+endif
+
 set clipboard+=unnamedplus
 " }}}
 
@@ -442,7 +475,7 @@ let &t_8f="\<Esc>[38;2;%lu;%lu;%lum"
 let &t_8b="\<Esc>[48;2;%lu;%lu;%lum"
 
 " faster exiting from insert mode (-noremap to allow for abbrevs to work)
-imap jj <Esc>
+inoremap jj <Esc>
 
 "-------------------------------- Navigation ---------------------------------"
 set mouse=a  " let the mouse wheel scroll page, etc
@@ -501,8 +534,8 @@ nnoremap <tab> :bn<CR>
 nnoremap <s-tab> :bp<CR>
 nnoremap <leader>bd :bd<CR>
 
+
 " Buffer navigation
-nnoremap <F3> :buffers<CR>:buffer<Space>
 nnoremap <Leader>1 :1b<CR>
 nnoremap <Leader>2 :2b<CR>
 nnoremap <Leader>3 :3b<CR>
@@ -519,6 +552,23 @@ nnoremap <c-j> <c-w><c-j>
 nnoremap <c-k> <c-w><c-k>
 nnoremap <c-l> <c-w><c-l>
 nnoremap <c-h> <c-w><c-h>
+
+" Zoom / Restore window.
+function! s:ZoomToggle() abort
+    if exists('t:zoomed') && t:zoomed
+        execute t:zoom_winrestcmd
+        let t:zoomed = 0
+    else
+        let t:zoom_winrestcmd = winrestcmd()
+        resize
+        vertical resize
+        let t:zoomed = 1
+    endif
+endfunction
+command! ZoomToggle call s:ZoomToggle()
+
+" Tmux like zoom
+nnoremap <silent> <c-w>z :ZoomToggle<CR>
 
 " Fast header source switch
 " https://stackoverflow.com/questions/6639863/vim-split-unless-open
@@ -600,4 +650,16 @@ map #  <Plug>(incsearch-nohl-#)
 map g* <Plug>(incsearch-nohl-g*)
 map g# <Plug>(incsearch-nohl-g#)"
 " }}}
+"
+" QT Console {{{
+command! -nargs=0 RunQtConsole call jobstart("jupyter qtconsole --ConsoleWidget.font_size=15 --style solarized-dark --JupyterWidget.include_other_output=True")
+
+let g:ipy_celldef = '^##' " regex for cell start and end
+
+nnoremap <leader>jqt :RunQtConsole<Enter>
+nnoremap <leader>jk :IPython<Space>--existing<Space>--no-window<Enter>
+nnoremap <leader>jc <Plug>(IPy-RunCell)
+nnoremap <leader>ja <Plug>(IPy-RunAll)
+" }}}
+
 
