@@ -170,3 +170,4 @@ fi
  }
 bindkey -s '^V' 'fzf_then_open_in_editor' # Ctrl + ↑
 
+alias drop_cache="sudo sh -c \"echo 3 >'/proc/sys/vm/drop_caches' && swapoff -a && swapon -a && printf '\n%s\n' 'Ram-cache and Swap Cleared'\""

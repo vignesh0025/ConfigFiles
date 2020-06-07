@@ -13,7 +13,13 @@ if &compatible
   set nocompatible
 endif
 
+" Allow saving of files as sudo when I forgot to start vim using sudo
+cmap w!! w !sudo tee > /dev/null %
+set colorcolumn=80
+
 syntax enable                " enable syntax processing
+
+set nostartofline           " Do not jump to first character with page commands.
 
 set textwidth=80 " Set linewidth to existing using `gq`
 
@@ -35,6 +41,7 @@ autocmd FileType python imap <buffer> <F5> <esc>:w<CR>:exec '!python3' shellesca
 
 " Disable minimise
 nnoremap <c-z> <nop>
+nnoremap Q <Nop>
 
 vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '>-2<CR>gv=gv
@@ -50,6 +57,7 @@ command! Wq wq
 
 " Read changes from file system
 set autoread
+set undofile            " Enable undo persistence across sessions
 
 " Got this from https://github.com/neoclide/coc.nvim
 set updatetime=300
@@ -68,6 +76,20 @@ endif
 
 " vim-plug {{{
 call plug#begin('~/.config/nvim/plugged')
+
+Plug 'justinmk/vim-sneak'
+Plug 'sbdchd/neoformat'
+Plug 'wellle/targets.vim'
+
+" Smooth PageUp, PageDown, OnePageUp, OnePageDown
+Plug 'psliwka/vim-smoothie'
+
+Plug 'wellle/tmux-complete.vim'
+Plug 'luochen1990/rainbow'
+
+Plug 'tmux-plugins/vim-tmux-focus-events'
+
+Plug 'SirVer/ultisnips'
 
 Plug 'vignesh0025/vim-cmake'
 Plug 'haya14busa/incsearch.vim'
@@ -117,6 +139,9 @@ Plug 'tpope/vim-repeat'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
+" Automatic selection of indentation
+Plug 'tpope/vim-sleuth'
+
 " git management plugin
 Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
@@ -143,6 +168,10 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 call plug#end()
 " }}} vim-plug
+
+" Rainbox Bracket {{{
+let g:rainbow_active = 1 "set to 0 if you want to enable it later via :RainbowToggle
+" }}}
 
 " Auto Pairs {{{
 inoremap (; ();<C-c>hi
@@ -358,7 +387,7 @@ command! -bang -nargs=* Rg
 " {{{ colorscheme
 if &runtimepath =~? 'plugged/gruvbox'
     let $NVIM_TUI_ENABLE_TRUE_COLOR=1
-    let g:gruvbox_contrast_dark='medium'
+    let g:gruvbox_contrast_dark='hard'
     let g:gruvbox_contrast_light='soft'
 
     " if strftime("%H") < 18 && strftime("%H") > 9
@@ -372,14 +401,13 @@ if &runtimepath =~? 'plugged/gruvbox'
     let g:airline_theme='gruvbox'
 
     colorscheme gruvbox
-    "colorscheme gruvbox  " must come after gruvbox_italic
 
     " match the fold column colors to the line number column
     " must come after colorscheme gruvbox
     highlight clear FoldColumn
     highlight! link FoldColumn LineNr
 
-    hi Normal guibg=NONE ctermbg=NONE
+    " hi Normal guibg=NONE ctermbg=NONE
 endif
 " }}}
 
@@ -405,7 +433,6 @@ if &runtimepath =~? 'fzf.vim'
 
     nnoremap <F2> :Commands<CR>
     nnoremap <F3> :Buffer<CR>
-    nnoremap <C-b> :Buffers<CR>
     nnoremap <F6> :Maps<CR>
     nnoremap <F12> :BCommits<CR>
 
@@ -475,7 +502,8 @@ let &t_8f="\<Esc>[38;2;%lu;%lu;%lum"
 let &t_8b="\<Esc>[48;2;%lu;%lu;%lum"
 
 " faster exiting from insert mode (-noremap to allow for abbrevs to work)
-inoremap jj <Esc>
+inoremap jk <Esc>
+cnoremap jk <Esc>
 
 "-------------------------------- Navigation ---------------------------------"
 set mouse=a  " let the mouse wheel scroll page, etc
@@ -662,4 +690,22 @@ nnoremap <leader>jc <Plug>(IPy-RunCell)
 nnoremap <leader>ja <Plug>(IPy-RunAll)
 " }}}
 
+" Unload Inbuild provide {{{
+let g:loaded_python_provider = 0
+let g:loaded_ruby_provider = 0
+let g:loaded_perl_provider = 0
+let g:loaded_node_provider = 0
+" }}}
 
+" Neoformat {{{
+" NOTE: stdin: 1 is very imporant. Otherwise .clang-format is not taken
+let g:neoformat_cpp_clangformat = {
+      \ 'exe': 'clang-format',
+      \ 'args': ['-style=file'],
+      \ 'stdin': 1
+      \}
+
+let g:neoformat_enabled_cpp = ['clangformat']
+let g:neoformat_enabled_c = ['clangformat']
+
+" }}}

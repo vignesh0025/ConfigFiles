@@ -12,7 +12,8 @@ fi
 #
 
 if [ "$ENV_WSL" -eq "1" ]; then
-    export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2; exit;}'):0.0
+    export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2; exit;}'):1.0
+    unset LIBGL_ALWAYS_INDIRECT
     sudo /etc/init.d/dbus start &> /dev/null
     # Remove all paths excluding from windows folder
     export PATH=$(echo "$PATH"  | perl -p -e 's/:\/mnt\/c\/(?i)(?!Windows)[A-Za-z\/ 0-9-.()_]+(?=:)//g')
