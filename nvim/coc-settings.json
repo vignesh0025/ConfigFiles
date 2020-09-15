@@ -1,6 +1,7 @@
 {
     "python.jediEnabled": true,
-    "python.pythonPath": "/home/vignesh/PY3/bin/python",
+    // "python.pythonPath": "$VIRTUAL_ENV/bin/python",
+    //  This is done inside .vimrc to use an environment variable
     "clangd.checkUpdates": true,
     "clangd.semanticHighlighting": true,
     "clangd.path": "/home/vignesh/.config/coc/extensions/coc-clangd-data/install/10.0.0/clangd_10.0.0/bin/clangd",
@@ -13,5 +14,15 @@
     "snippets.ultisnips.directories": [
         "UltiSnips",
         "vim-snippets/UltiSnips"
-    ]
+    ],
+    "coc.source.tmuxcomplete.priority":11,
+    "coc.source.ultisnips.shortcut": "UltiSnips",
+    "coc.source.around.shortcut": "Around",
+    "coc.source.buffer.shortcut": "Buffer",
+    "coc.source.file.shortcut": "File",
+    "snippets.shortcut": "Snippets",
+    "python.jediShortcut": "Jedi",
+    "java.home": "/home/vignesh/jdk1.8.0_251",
+    "java.import.gradle.enabled": true,
+    "java.import.gradle.wrapper.enabled": true
 }

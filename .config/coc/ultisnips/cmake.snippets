@@ -33,12 +33,20 @@ SET (CMAKE_C_FLAGS_MINSIZEREL     "-Os -DNDEBUG")
 SET (CMAKE_C_FLAGS_RELEASE        "-O4 -DNDEBUG")
 SET (CMAKE_C_FLAGS_RELWITHDEBINFO "-O2 -g")
 
+endsnippet
+
+snippet cmake_llvm+ "Use LLVM in place of G++" b
+
 SET (CMAKE_CXX_COMPILER             "/usr/bin/clang++")
 SET (CMAKE_CXX_FLAGS                "-Wall")
 SET (CMAKE_CXX_FLAGS_DEBUG          "-g")
 SET (CMAKE_CXX_FLAGS_MINSIZEREL     "-Os -DNDEBUG")
 SET (CMAKE_CXX_FLAGS_RELEASE        "-O4 -DNDEBUG")
 SET (CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
+
+endsnippet
+
+snippet cmake_ld "Use LLVM in place of ld" b
 
 SET (CMAKE_AR      "/usr/bin/llvm-ar-10")
 SET (CMAKE_LINKER  "/usr/bin/llvm-link-10")
@@ -58,4 +66,10 @@ endsnippet
 
 snippet cmake_compile_commands "Export compile commands" b
 SET(CMAKE_EXPORT_COMPILE_COMMANDS ON )
+endsnippet
+
+snippet cmake_source_dir "Specify source file directory" b
+SET(source_dir "${PROJECT_SOURCE_DIR}/src/")
+file (GLOB source_files "${source_dir}/*.cpp")
+// add_executable(HelloWorld ${source_files})
 endsnippet

@@ -7,7 +7,7 @@ if [ -z "$ENV_WSL" ]|| [ $ENV_WSL -eq "0" ]; then
 fi
 
 # If you come from bash you might have to change your $PATH.
-export PATH=$HOME/bin:$PATH
+export PATH=$HOME/bin:$HOME/.dotnet:$PATH
 
 # Path to your oh-my-zsh installation.
 export ZSH="/home/vignesh/.oh-my-zsh"
@@ -134,7 +134,6 @@ export SDKMAN_DIR="/home/vignesh/.sdkman"
 [[ -s "/home/vignesh/.sdkman/bin/sdkman-init.sh" ]] && source "/home/vignesh/.sdkman/bin/sdkman-init.sh"
 
 source /home/vignesh/.config/nvim/plugged/gruvbox/gruvbox_256palette.sh
-source ~/PY3/bin/activate
 
 export FZF_DEFAULT_COMMAND='rg --files --no-ignore-vcs --hidden '
 export FZF_DEFAULT_OPTS='--preview "bat {}"'
@@ -171,3 +170,12 @@ fi
 bindkey -s '^V' 'fzf_then_open_in_editor' # Ctrl + ↑
 
 alias drop_cache="sudo sh -c \"echo 3 >'/proc/sys/vm/drop_caches' && swapoff -a && swapon -a && printf '\n%s\n' 'Ram-cache and Swap Cleared'\""
+alias nnvim="~/nvim-nightly/nvim-linux64/bin/nvim -u ~/nvim-nightly/init.vim"
+
+# Python Related
+if [[ -n $VIRTUAL_ENV && -e "${VIRTUAL_ENV}/bin/activate" ]]; then
+  source "${VIRTUAL_ENV}/bin/activate"
+fi
+
+export WORKON_HOME=~/Envs
+source /usr/local/bin/virtualenvwrapper.sh

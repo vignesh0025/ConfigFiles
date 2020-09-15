@@ -6,9 +6,7 @@ autocmd FileType vim setlocal foldmethod=marker foldlevel=0
 augroup END
 " }}}
 
-"Custom {{{
-let g:python3_host_prog='/home/vignesh/PY3/bin/python'
-
+" Set Options {{{
 if &compatible
   set nocompatible
 endif
@@ -17,36 +15,77 @@ endif
 cmap w!! w !sudo tee > /dev/null %
 set colorcolumn=80
 
-syntax enable                " enable syntax processing
+set mouse=a                 " let the mouse wheel scroll page, etc
+syntax enable               " Enable Syntax Processing
 
 set nostartofline           " Do not jump to first character with page commands.
-
-set textwidth=80 " Set linewidth to existing using `gq`
-
-" open new split panes to right and below
-set splitright
+set relativenumber          " Set Relative File Number
+set textwidth=80            " Set linewidth to existing using `gq`
+set splitright              " Open new split panes to right and below
 set splitbelow
+set noshowmode              " hide the mode (airline will show instead)
+set termguicolors           " true color support
+set guioptions=             " remove scrollbars, etc
+set scrolloff=1             " start scrolling when near the last line/col
+set sidescrolloff=5         " Scrolling Offset
+set autoread                " Read changes from file system
+set undofile                " Enable undo persistence across sessions
 
-set noshowmode  " hide the mode (airline will show instead)
+set updatetime=300          " Got this from https://github.com/neoclide/coc.nvim
+set shortmess+=c
 
-set termguicolors  " true color support
-set guioptions=  " remove scrollbars, etc
+" Don't pass messages to |ins-completion-menu|.
+" Always show the signcolumn, otherwise it would shift the text each time
+" diagnostics appear/become resolved.
+set signcolumn=yes
 
-" start scrolling when near the last line/col
-set scrolloff=1
-set sidescrolloff=5
+" Tabs and Spaces
+set tabstop=4       " number of visual spaces per TAB
+set softtabstop=4   " number of spaces in tab when editing
+set shiftwidth=4    " number of spaces to use for autoindent
+set shiftround
+set expandtab       " tabs are space
+set autoindent
+set copyindent      " copy indent from the previous line
 
-autocmd FileType python map <buffer> <F5> :w<CR>:exec '!python3' shellescape(@%, 1)<CR>
-autocmd FileType python imap <buffer> <F5> <esc>:w<CR>:exec '!python3' shellescape(@%, 1)<CR>
+" Show PUM for wild card menu eg. :e <TAB>
+if has('nvim')
+    set wildoptions=pum
+endif
+
+set hidden
+set number                   " show line number
+set showcmd                  " show command in bottom bar
+set cursorline               " highlight current line
+set wildmenu                 " visual autocomplete for command menu
+set wildignore=".git/*,.clangd/*"
+set showmatch                " highlight matching brace
+set laststatus=2             " window will always have a status line
+set nobackup
+set noswapfile
+
+set incsearch       " search as characters are entered
+set hlsearch        " highlight matches
+set ignorecase      " ignore case when searching
+set smartcase       " ignore case if search pattern is lower case
+
+set foldenable          " Folding Enable
+set foldlevelstart=10   " default folding level when buffer is opened
+set foldnestmax=10      " maximum nested fold
+set foldmethod=syntax   " fold based on indentation
+
+" }}}
+
+" Command & Mappings {{{
 
 " Disable minimise
 nnoremap <c-z> <nop>
 nnoremap Q <Nop>
+nnoremap <leader>o o<esc>k
 
 vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '>-2<CR>gv=gv
 
-nnoremap <leader>o o<esc>k
 nnoremap <leader>O O<esc>j
 
 " I'm bad at typing.
@@ -55,47 +94,122 @@ command! W w
 command! WQ wq
 command! Wq wq
 
-" Read changes from file system
-set autoread
-set undofile            " Enable undo persistence across sessions
+" Auto Pairs {{{
+inoremap (; ();<C-c>hi
+inoremap (, (),<C-c>hi
+inoremap {; {<CR>};<C-c>O
+inoremap {, {<CR>},<C-c>O
+inoremap [; [<CR>];<C-c>O
+inoremap [, [<CR>],<C-c>O
+" }}}
 
-" Got this from https://github.com/neoclide/coc.nvim
-set updatetime=300
-set shortmess+=c
+" faster exiting from insert mode (-noremap to allow for abbrevs to work)
+inoremap jk <Esc>
+cnoremap jk <Esc>
 
-" Don't pass messages to |ins-completion-menu|.
-" Always show the signcolumn, otherwise it would shift the text each time
-" diagnostics appear/become resolved.
-set signcolumn=yes
+" better ESC
+inoremap jj <esc>
 
-" Show PUM for wild card menu eg. :e <TAB>
-if has('nvim')
-    set wildoptions=pum
-endif
+" move up/down consider wrapped lines
+nnoremap j gj
+nnoremap k gk
+
+nnoremap <tab> :bn<CR>
+nnoremap <s-tab> :bp<CR>
+
+" split navigation
+nnoremap <c-j> <c-w><c-j>
+nnoremap <c-k> <c-w><c-k>
+nnoremap <c-l> <c-w><c-l>
+nnoremap <c-h> <c-w><c-h>
+
+" }}}
+
+" Leader based Mappings {{{
+let mapleader=","   " leader is comma
+
+" edit/reload vimrc
+nmap <leader>ev :e $MYVIMRC<CR>
+nmap <leader>sv :so $MYVIMRC<CR>
+
+nmap <leader>et :e ~/.tmux.conf<CR>
+nmap <leader>ez :e ~/.zshrc<CR>
+
+" fast save and close
+nmap <leader>w :w<CR>
+nmap <leader>x :x<CR>
+nmap <leader>q :q<CR>
+nnoremap <leader>Q :only<CR>
+
+" fix indentation for entire file which we usually do
+nnoremap <leader>i mzgg=G`z<CR>
+
+" turn off search highlights
+nnoremap <leader><space> :nohlsearch<CR>
+
+" move through grep results
+" nmap <silent> <right> :cnext<CR>
+" nmap <silent> <left> :cprev<CR>
+
+" buffers
+nnoremap <leader>bd :bd<CR>
+
+" Buffer navigation
+nnoremap <Leader>1 :1b<CR>
+nnoremap <Leader>2 :2b<CR>
+nnoremap <Leader>3 :3b<CR>
+nnoremap <Leader>4 :4b<CR>
+nnoremap <Leader>5 :5b<CR>
+nnoremap <Leader>6 :6b<CR>
+nnoremap <Leader>7 :7b<CR>
+nnoremap <Leader>8 :8b<CR>
+nnoremap <Leader>9 :9b<CR>
+nnoremap <Leader>0 :10b<CR>
+
 " }}}
 
 " vim-plug {{{
 call plug#begin('~/.config/nvim/plugged')
 
-Plug 'justinmk/vim-sneak'
+Plug 'sheerun/vim-polyglot'
+Plug 'lifepillar/vim-cheat40'
+
+
+Plug 'christoomey/vim-tmux-runner'
+" Plug 'justinmk/vim-sneak'
+"
+" Plugin for Neoformat that formats all programs :Neoformat
 Plug 'sbdchd/neoformat'
+
+" Awesome Text Object Support is given here
+" Study this often
 Plug 'wellle/targets.vim'
 
 " Smooth PageUp, PageDown, OnePageUp, OnePageDown
 Plug 'psliwka/vim-smoothie'
 
+" Provid Autocompletion from other tmux panes in Coc
 Plug 'wellle/tmux-complete.vim'
+
+" Rainbox Parenthesis
 Plug 'luochen1990/rainbow'
 
 Plug 'tmux-plugins/vim-tmux-focus-events'
 
+" Provide Snippets via CocSnippets
 Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets' " Works with ultisnips to provide a list
 
-Plug 'vignesh0025/vim-cmake'
+" My Own Plugins for CMAKE
+Plug '~/Data/vimrcs/vim-cmake'
+" Plug 'vignesh0025/vim-cmake'
+
+" Provides more features around / and ? and all
 Plug 'haya14busa/incsearch.vim'
 
 Plug 'chriskempson/base16-vim'
-Plug 'morhetz/gruvbox'
+" Plug 'morhetz/gruvbox'
+Plug 'sainnhe/gruvbox-material'
 
 Plug 'ryanoasis/vim-devicons'
 Plug 'unblevable/quick-scope'
@@ -118,14 +232,13 @@ Plug 'octol/vim-cpp-enhanced-highlight'
 " For using clangd-format with C/CPP
 Plug 'chiel92/vim-autoformat'
 Plug 'nvie/vim-flake8' " pip install flake8 and <F7> key to check py file
-Plug 'honza/vim-snippets' " Works with ultisnips to provide a list
 
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'jremmen/vim-ripgrep'
 Plug 'dkprice/vim-easygrep'
 
-" note
+" Note Taking
 Plug 'xolox/vim-misc'
 Plug 'xolox/vim-notes'
 
@@ -134,6 +247,8 @@ Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
 Plug 'godlygeek/tabular'
 Plug 'tpope/vim-repeat'
+
+Plug 'tpope/vim-unimpaired'
 
 " better statusline
 Plug 'vim-airline/vim-airline'
@@ -150,7 +265,6 @@ Plug 'bfredl/nvim-ipy'
 
 "Plug 'gabrielelana/vim-markdown'
 "Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } }
-Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
 
 Plug 'vim-pandoc/vim-pandoc'
@@ -173,15 +287,6 @@ call plug#end()
 let g:rainbow_active = 1 "set to 0 if you want to enable it later via :RainbowToggle
 " }}}
 
-" Auto Pairs {{{
-inoremap (; ();<C-c>hi
-inoremap (, (),<C-c>hi
-inoremap {; {<CR>};<C-c>O
-inoremap {, {<CR>},<C-c>O
-inoremap [; [<CR>];<C-c>O
-inoremap [, [<CR>],<C-c>O
-" }}}
-
 " Airline {{{
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
@@ -201,6 +306,92 @@ let g:cpp_experimental_simple_template_highlight = 1
 " Flake8 {{{
 let g:flake8_show_in_gutter=1
 let g:flake8_show_in_file=1
+" }}}
+
+" UltiSnips {{{
+let g:UltiSnipsExpandTrigger       = "<c-j>"
+let g:UltiSnipsJumpForwardTrigger  = "<c-j>"
+let g:UltiSnipsJumpBackwardTrigger = "<c-p>"
+let g:UltiSnipsListSnippets        = "<c-k>" "List possible snippets based on current file
+let g:UltiSnipsUsePythonVersion = 3
+" }}}
+
+" {{{ colorscheme
+if &runtimepath =~? 'plugged/gruvbox-material'
+    let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+    let g:gruvbox_contrast_dark='hard'
+    let g:gruvbox_contrast_light='hard'
+
+    " if strftime("%H") < 18 && strftime("%H") > 9
+    "   set background=light
+    " else
+    "   set background=dark
+    " endif
+
+    set background=dark
+
+    let g:gruvbox_italic = 1
+    let g:gruvbox_sign_column='bg0'
+    let g:airline_theme='gruvbox_material'
+
+    colorscheme gruvbox-material
+
+    " match the fold column colors to the line number column
+    " must come after colorscheme gruvbox
+    highlight clear FoldColumn
+    highlight! link FoldColumn LineNr
+
+    " hi Normal guibg=NONE ctermbg=NONE
+endif
+" }}}
+
+" Ripgrep & FZF {{{
+if executable('rg') " set Rg as the grep command
+    " Note we extract the column as well as the file and line number
+    set grepprg=rg\ --vimgrep\ --no-heading
+    set grepformat=%f:%l:%c:%m,%f:%l:%m
+    "set grepformat=%f:%l:%c%m
+endif
+
+let g:rg_command = 'rg --vimgrep -S'
+" Make FZF use rg. THis makes it extremely fast
+let $FZF_DEFAULT_COMMAND = 'rg -l --smart-case ""'
+
+" THis is for :Rg command
+command! -bang -nargs=* Rg
+  \ call fzf#vim#grep(
+  \   'rg --column --line-number --no-heading --colors "path:fg:190,220,255" --colors "line:fg:128,128,128" --smart-case '.shellescape(<q-args>), 1, { 'options': '--color hl:123,hl+:222' }, 0)
+
+if &runtimepath =~? 'fzf.vim'
+    augroup hide_fzf_statusline
+        autocmd! FileType fzf
+        autocmd  FileType fzf set laststatus=0 noruler
+                    \| autocmd BufLeave <buffer> set laststatus=2 ruler
+    augroup END
+
+    " Jump to existing window if possible
+    let g:fzf_buffers_jump = 1
+
+    nnoremap <c-p> :Files<CR>
+    nnoremap <m-p> :GFiles<CR>
+    nnoremap <m-P> :GFiles?<CR>
+    let g:fzf_action = {
+                \ 'ctrl-t': 'tab split',
+                \ 'ctrl-s': 'split',
+                \ 'ctrl-v': 'vsplit'
+                \}
+
+    " mappings
+    " nnoremap <C-f> :BLines<CR>
+
+    nnoremap <F2> :Commands<CR>
+    nnoremap <F3> :Buffer<CR>
+    nnoremap <F6> :Maps<CR>
+    nnoremap <F12> :BCommits<CR>
+
+    " don't highlight the current line and selection column
+    let g:fzf_colors = {'bg+': ['bg', 'Normal']}
+endif
 " }}}
 
 " COC.NVIM {{{
@@ -241,6 +432,7 @@ let g:flake8_show_in_file=1
 
     " Use K to show documentation in preview window.
     nnoremap <silent> K :call <SID>show_documentation()<CR>
+    set keywordprg=:call\ <SID>show_documentation()
     function! s:show_documentation()
         if (index(['vim','help'], &filetype) >= 0)
             execute 'h '.expand('<cword>')
@@ -364,93 +556,6 @@ let g:flake8_show_in_file=1
 "endif
 " }}}
 
-" UltiSnips {{{
-let g:UltiSnipsExpandTrigger       = "<c-j>"
-let g:UltiSnipsJumpForwardTrigger  = "<c-j>"
-let g:UltiSnipsJumpBackwardTrigger = "<c-p>"
-let g:UltiSnipsListSnippets        = "<c-k>" "List possible snippets based on current file
-let g:UltiSnipsUsePythonVersion = 3
-" }}}
-
-" FZF {{{
-let g:rg_command = 'rg --vimgrep -S'
-" Make FZF use rg. THis makes it extremely fast
-let $FZF_DEFAULT_COMMAND = 'rg -l --smart-case ""'
-
-" THis is for :Rg command
-command! -bang -nargs=* Rg
-  \ call fzf#vim#grep(
-  \   'rg --column --line-number --no-heading --colors "path:fg:190,220,255" --colors "line:fg:128,128,128" --smart-case '.shellescape(<q-args>), 1, { 'options': '--color hl:123,hl+:222' }, 0)
-
-"
-
-" {{{ colorscheme
-if &runtimepath =~? 'plugged/gruvbox'
-    let $NVIM_TUI_ENABLE_TRUE_COLOR=1
-    let g:gruvbox_contrast_dark='hard'
-    let g:gruvbox_contrast_light='soft'
-
-    " if strftime("%H") < 18 && strftime("%H") > 9
-    "   set background=light
-    " else
-    set background=dark
-    " endif
-
-    let g:gruvbox_italic = 1
-    let g:gruvbox_sign_column='bg0'
-    let g:airline_theme='gruvbox'
-
-    colorscheme gruvbox
-
-    " match the fold column colors to the line number column
-    " must come after colorscheme gruvbox
-    highlight clear FoldColumn
-    highlight! link FoldColumn LineNr
-
-    " hi Normal guibg=NONE ctermbg=NONE
-endif
-" }}}
-
-if &runtimepath =~? 'fzf.vim'
-    augroup hide_fzf_statusline
-        autocmd! FileType fzf
-        autocmd  FileType fzf set laststatus=0 noruler
-                    \| autocmd BufLeave <buffer> set laststatus=2 ruler
-    augroup END
-
-    " Jump to existing window if possible
-    let g:fzf_buffers_jump = 1
-
-    nnoremap <c-p> :Files<CR>
-    let g:fzf_action = {
-                \ 'ctrl-t': 'tab split',
-                \ 'ctrl-s': 'split',
-                \ 'ctrl-v': 'vsplit'
-                \}
-
-    " mappings
-    " nnoremap <C-f> :BLines<CR>
-
-    nnoremap <F2> :Commands<CR>
-    nnoremap <F3> :Buffer<CR>
-    nnoremap <F6> :Maps<CR>
-    nnoremap <F12> :BCommits<CR>
-
-    " don't highlight the current line and selection column
-    let g:fzf_colors = {'bg+': ['bg', 'Normal']}
-endif
-" }}}
-
-" Spaces & Tabs {{{
-set tabstop=4       " number of visual spaces per TAB
-set softtabstop=4   " number of spaces in tab when editing
-set shiftwidth=4    " number of spaces to use for autoindent
-set shiftround
-set expandtab       " tabs are space
-set autoindent
-set copyindent      " copy indent from the previous line
-" }}} Spaces & Tabs
-
 " Clipboard {{{
 
 if $ENV_WSL == 1
@@ -472,116 +577,42 @@ endif
 set clipboard+=unnamedplus
 " }}}
 
-" UI Config {{{
-set hidden
-set number                   " show line number
-set showcmd                  " show command in bottom bar
-set cursorline               " highlight current line
-set wildmenu                 " visual autocomplete for command menu
-set wildignore=".git/*,.clangd/*"
-set showmatch                " highlight matching brace
-set laststatus=2             " window will always have a status line
-set nobackup
-set noswapfile
-
-" For Plugin Quick Scope
-" Trigger a highlight in the appropriate direction when pressing these keys:
-
-" let &colorcolumn="80,".join(range(119,999),",")
-" }}}
-
-" Search {{{
-set incsearch       " search as characters are entered
-set hlsearch        " highlight matches
-set ignorecase      " ignore case when searching
-set smartcase       " ignore case if search pattern is lower case
-" case-sensitive otherwise
-
-" fix italics with tmux
+"  Italics with tmux fix {{{
 let &t_8f="\<Esc>[38;2;%lu;%lu;%lum"
 let &t_8b="\<Esc>[48;2;%lu;%lu;%lum"
-
-" faster exiting from insert mode (-noremap to allow for abbrevs to work)
-inoremap jk <Esc>
-cnoremap jk <Esc>
-
-"-------------------------------- Navigation ---------------------------------"
-set mouse=a  " let the mouse wheel scroll page, etc
-
-" set Rg as the grep command
-if executable('rg')
-    " Note we extract the column as well as the file and line number
-    set grepprg=rg\ --vimgrep\ --no-heading
-    set grepformat=%f:%l:%c:%m,%f:%l:%m
-    "set grepformat=%f:%l:%c%m
-endif
 " }}}
 
-" Folding {{{
-set foldenable
-set foldlevelstart=10  " default folding level when buffer is opened
-set foldnestmax=10     " maximum nested fold
-set foldmethod=syntax  " fold based on indentation
-" }}} Folding
+" CPP {{{
+" Fast header source switch
+" https://stackoverflow.com/questions/6639863/vim-split-unless-open
+" This is one of the most interesting vim mapping. It opens the header/src
+" in new split if not open or if open, switches it it automatically
+function! MySplit( fname )
+    let bufnum=bufnr(expand(a:fname))
+    let winnum=bufwinnr(bufnum)
+    if winnum != -1
+        " Jump to existing split
+        exe winnum . "wincmd w"
+    else
+        " Make new split as usual
+        exe "vsplit " . a:fname
+    endif
+endfunction
 
-" Leader & Mappings {{{
-let mapleader=","   " leader is comma
+" augroup filetype_c_cpp
+" " map <F4> :e %:p:s,.h$,.X123X,:s,.cpp$,.h,:s,.X123X$,.cpp,<CR>
+" autocmd!
+autocmd BufEnter,BufNewFile *.c,*,cpp,*.h command! -nargs=1 VSplit :call MySplit("<args>")
+autocmd BufEnter,BufNewFile *.c,*,cpp,*.h map <F4> :VSplit %:p:s,.h$,.X123X,:s,.cpp$,.h,:s,.X123X$,.cpp,<CR>
+" augroup end
 
-" edit/reload vimrc
-nmap <leader>ev :e $MYVIMRC<CR>
-nmap <leader>sv :so $MYVIMRC<CR>
+" Formatting for CPP
+autocmd FileType cpp set formatprg=clang-format
+autocmd FileType cmake set formatprg=clang-format
 
-nmap <leader>et :e ~/.tmux.conf<CR>
-nmap <leader>ez :e ~/.zshrc<CR>
+" }}}
 
-" better ESC
-inoremap jj <esc>
-
-" fast save and close
-nmap <leader>w :w<CR>
-nmap <leader>x :x<CR>
-nmap <leader>q :q<CR>
-nnoremap <leader>Q :only<CR>
-
-" move up/down consider wrapped lines
-nnoremap j gj
-nnoremap k gk
-
-" fix indentation for entire file which we usually do
-nnoremap <leader>i mzgg=G`z<CR>
-
-" turn off search highlights
-nnoremap <leader><space> :nohlsearch<CR>
-
-" move through grep results
-" nmap <silent> <right> :cnext<CR>
-" nmap <silent> <left> :cprev<CR>
-
-" buffers
-nnoremap <tab> :bn<CR>
-nnoremap <s-tab> :bp<CR>
-nnoremap <leader>bd :bd<CR>
-
-
-" Buffer navigation
-nnoremap <Leader>1 :1b<CR>
-nnoremap <Leader>2 :2b<CR>
-nnoremap <Leader>3 :3b<CR>
-nnoremap <Leader>4 :4b<CR>
-nnoremap <Leader>5 :5b<CR>
-nnoremap <Leader>6 :6b<CR>
-nnoremap <Leader>7 :7b<CR>
-nnoremap <Leader>8 :8b<CR>
-nnoremap <Leader>9 :9b<CR>
-nnoremap <Leader>0 :10b<CR>
-
-" split navigation
-nnoremap <c-j> <c-w><c-j>
-nnoremap <c-k> <c-w><c-k>
-nnoremap <c-l> <c-w><c-l>
-nnoremap <c-h> <c-w><c-h>
-
-" Zoom / Restore window.
+" Zoom / Restore window {{{
 function! s:ZoomToggle() abort
     if exists('t:zoomed') && t:zoomed
         execute t:zoom_winrestcmd
@@ -598,26 +629,9 @@ command! ZoomToggle call s:ZoomToggle()
 " Tmux like zoom
 nnoremap <silent> <c-w>z :ZoomToggle<CR>
 
-" Fast header source switch
-" https://stackoverflow.com/questions/6639863/vim-split-unless-open
-" This is one of the most interesting vim mapping. It opens the header/src
-" in new split if not open or if open, switches it it automatically
-function! MySplit( fname )
-    let bufnum=bufnr(expand(a:fname))
-    let winnum=bufwinnr(bufnum)
-    if winnum != -1
-        " Jump to existing split
-        exe winnum . "wincmd w"
-    else
-        " Make new split as usual
-        exe "vsplit " . a:fname
-    endif
-endfunction
-" map <F4> :e %:p:s,.h$,.X123X,:s,.cpp$,.h,:s,.X123X$,.cpp,<CR>
-command! -nargs=1 VSplit :call MySplit("<args>")
-map <F4> :VSplit %:p:s,.h$,.X123X,:s,.cpp$,.h,:s,.X123X$,.cpp,<CR>
-"cabbrev split Split
+" }}}
 
+" Inbuild Terminal Map {{{
 " turn terminal to normal mode with escape
 " tnoremap <Esc> <C-\><C-n>
 
@@ -632,16 +646,15 @@ function! OpenTerminal()
 endfunction
 
 nnoremap <c-\> :call OpenTerminal()<CR>
-
 " }}}
 
-" NERDTree mappings {{{
+" DISABLED: NERDTree mappings {{{
 " map <C-n> :NERDTreeToggle<CR>
 " let NERDTreeShowHidden=1
 " let NERDTreeIgnore = ['\.pyc$', '__pycache__']
 " }}}
 
-" Clang-format Auto save {{{
+" DISABLED: Clang-format Auto save {{{
 " Use clang-format -style=google -dump-config > .clang-format to dump config
 " (NOTE: Other styles such as llv, firefox, firefox and all exist. check its
 " documentation)
@@ -652,15 +665,11 @@ nnoremap <c-\> :call OpenTerminal()<CR>
 " autocmd FileType *.h,*.cc,*.cpp vnoremap = :echo "test"<CR>
 
 " " Set the default format tools
-autocmd FileType cpp set formatprg=clang-format
-autocmd FileType cmake set formatprg=clang-format
-
 "autocmd FileType *.h,*.cc,*.cpp vnoremap = :Autoformat<CR>
 
 " }}}
 
-" Functions {{{
-" trailing whitespace
+" Trimming White Space Before Save {{{
 match ErrorMsg '\s\+$'
 function! TrimWhiteSpace()
     %s/\s\+$//e
@@ -668,7 +677,7 @@ endfunction
 autocmd BufWritePre * :call TrimWhiteSpace()
 " }}}
 
-" incsearch {{{
+" haya14busa/incsearch {{{
 " This requires `set hlsearch` which is set above
 let g:incsearch#auto_nohlsearch = 1
 map n  <Plug>(incsearch-nohl-n)
@@ -677,17 +686,6 @@ map *  <Plug>(incsearch-nohl-*)
 map #  <Plug>(incsearch-nohl-#)
 map g* <Plug>(incsearch-nohl-g*)
 map g# <Plug>(incsearch-nohl-g#)"
-" }}}
-"
-" QT Console {{{
-command! -nargs=0 RunQtConsole call jobstart("jupyter qtconsole --ConsoleWidget.font_size=15 --style solarized-dark --JupyterWidget.include_other_output=True")
-
-let g:ipy_celldef = '^##' " regex for cell start and end
-
-nnoremap <leader>jqt :RunQtConsole<Enter>
-nnoremap <leader>jk :IPython<Space>--existing<Space>--no-window<Enter>
-nnoremap <leader>jc <Plug>(IPy-RunCell)
-nnoremap <leader>ja <Plug>(IPy-RunAll)
 " }}}
 
 " Unload Inbuild provide {{{
@@ -709,3 +707,65 @@ let g:neoformat_enabled_cpp = ['clangformat']
 let g:neoformat_enabled_c = ['clangformat']
 
 " }}}
+
+" Hex {{{
+" ex command for toggling hex mode - define mapping if desired
+command -bar Hexmode call ToggleHex()
+
+" helper function to toggle hex mode
+function ToggleHex()
+  " hex mode should be considered a read-only operation
+  " save values for modified and read-only for restoration later,
+  " and clear the read-only flag for now
+  let l:modified=&mod
+  let l:oldreadonly=&readonly
+  let &readonly=0
+  let l:oldmodifiable=&modifiable
+  let &modifiable=1
+  if !exists("b:editHex") || !b:editHex
+    " save old options
+    let b:oldft=&ft
+    let b:oldbin=&bin
+    " set new options
+    setlocal binary " make sure it overrides any textwidth, etc.
+    silent :e " this will reload the file without trickeries
+              "(DOS line endings will be shown entirely )
+    let &ft="xxd"
+    " set status
+    let b:editHex=1
+    " switch to hex editor
+    %!xxd
+  else
+    " restore old options
+    let &ft=b:oldft
+    if !b:oldbin
+      setlocal nobinary
+    endif
+    " set status
+    let b:editHex=0
+    " return to normal editing
+    %!xxd -r
+  endif
+  " restore values for modified and read only state
+  let &mod=l:modified
+  let &readonly=l:oldreadonly
+  let &modifiable=l:oldmodifiable
+endfunction
+" }}}
+
+" Python & Autocmd {{{
+let g:python3_host_prog=expand('$VIRTUAL_ENV/bin/python')
+call coc#config("python.pythonPath", expand("$VIRTUAL_ENV/bin/python"))
+autocmd FileType python map <buffer> <F5> :w<CR>:exec '!python3' shellescape(@%, 1)<CR>
+autocmd FileType python imap <buffer> <F5> <esc>:w<CR>:exec '!python3' shellescape(@%, 1)<CR>
+
+" QT Console
+command! -nargs=0 RunQtConsole call jobstart("jupyter qtconsole --ConsoleWidget.font_size=15 --style solarized-dark --JupyterWidget.include_other_output=True")
+
+let g:ipy_celldef = '^##' " regex for cell start and end
+nnoremap <leader>jqt :RunQtConsole<Enter>
+nnoremap <leader>jk :IPython<Space>--existing<Space>--no-window<Enter>
+nnoremap <leader>jc <Plug>(IPy-RunCell)
+nnoremap <leader>ja <Plug>(IPy-RunAll)
+" }}}
+
