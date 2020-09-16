@@ -25,7 +25,7 @@ export ZSH="/home/vignesh/.oh-my-zsh"
 #    }
 if [[ "$TERM_PROGRAM" != "vscode" ]]; then
     ZSH_THEME="agnoster"
-    ZSH_TMUX_AUTOSTART="true"
+    # ZSH_TMUX_AUTOSTART="true"
 else
     ZSH_THEME="af-magic"
 fi
@@ -88,7 +88,7 @@ fi
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git tmux)
+plugins=(git tmux virtualenv)
 
 
 source $ZSH/oh-my-zsh.sh
@@ -172,10 +172,15 @@ bindkey -s '^V' 'fzf_then_open_in_editor' # Ctrl + ↑
 alias drop_cache="sudo sh -c \"echo 3 >'/proc/sys/vm/drop_caches' && swapoff -a && swapon -a && printf '\n%s\n' 'Ram-cache and Swap Cleared'\""
 alias nnvim="~/nvim-nightly/nvim-linux64/bin/nvim -u ~/nvim-nightly/init.vim"
 
+function virtualenv_info {
+    [ $VIRTUAL_ENV ] && echo '('`basename $VIRTUAL_ENV`') '
+}
+
+export WORKON_HOME=~/Envs
+export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python
+source /usr/local/bin/virtualenvwrapper.sh
+
 # Python Related
 if [[ -n $VIRTUAL_ENV && -e "${VIRTUAL_ENV}/bin/activate" ]]; then
   source "${VIRTUAL_ENV}/bin/activate"
 fi
-
-export WORKON_HOME=~/Envs
-source /usr/local/bin/virtualenvwrapper.sh

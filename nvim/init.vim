@@ -174,7 +174,6 @@ call plug#begin('~/.config/nvim/plugged')
 Plug 'sheerun/vim-polyglot'
 Plug 'lifepillar/vim-cheat40'
 
-
 Plug 'christoomey/vim-tmux-runner'
 " Plug 'justinmk/vim-sneak'
 "
