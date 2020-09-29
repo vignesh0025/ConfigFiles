@@ -271,7 +271,7 @@ Plug 'vim-pandoc/vim-pandoc-syntax'
 
 Plug 'michaeljsmith/vim-indent-object'
 
-Plug 'jackguo380/vim-lsp-cxx-highlight'
+"Plug 'jackguo380/vim-lsp-cxx-highlight'
 
 " Plug 'vhdirk/vim-cmake'
 Plug 'easymotion/vim-easymotion'
@@ -283,36 +283,46 @@ call plug#end()
 " }}} vim-plug
 
 " Rainbox Bracket {{{
-let g:rainbow_active = 1 "set to 0 if you want to enable it later via :RainbowToggle
+if &runtimepath =~? 'plugged/rainbow'
+  let g:rainbow_active = 1 "set to 0 if you want to enable it later via :RainbowToggle
+endif
 " }}}
 
 " Airline {{{
-let g:airline_powerline_fonts = 1
-let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#tabline#buffer_nr_show = 1
+if &runtimepath =~? 'plugged/vim-airline'
+  let g:airline_powerline_fonts = 1
+  let g:airline#extensions#tabline#enabled = 1
+  let g:airline#extensions#tabline#buffer_nr_show = 1
+endif
 " }}}
 
 " Cpp Enhanced Highlighting {{{
-let g:cpp_class_scope_highlight = 1
-let g:cpp_class_decl_highlight = 1
-let g:cpp_class_scope_highlight = 1
-let g:cpp_concepts_highlight = 1
-let g:cpp_posix_standard = 1
-let g:cpp_member_variable_highlight = 1
-let g:cpp_experimental_simple_template_highlight = 1
+if &runtimepath =~? 'plugged/vim-cpp-enhanced-highlight'
+  let g:cpp_class_scope_highlight = 1
+  let g:cpp_class_decl_highlight = 1
+  let g:cpp_class_scope_highlight = 1
+  let g:cpp_concepts_highlight = 1
+  let g:cpp_posix_standard = 1
+  let g:cpp_member_variable_highlight = 1
+  let g:cpp_experimental_simple_template_highlight = 1
+endif
 " }}}
 
 " Flake8 {{{
-let g:flake8_show_in_gutter=1
-let g:flake8_show_in_file=1
+if &runtimepath =~? 'plugged/vim-flake8'
+  let g:flake8_show_in_gutter=1
+  let g:flake8_show_in_file=1
+endif
 " }}}
 
 " UltiSnips {{{
-let g:UltiSnipsExpandTrigger       = "<c-j>"
-let g:UltiSnipsJumpForwardTrigger  = "<c-j>"
-let g:UltiSnipsJumpBackwardTrigger = "<c-p>"
-let g:UltiSnipsListSnippets        = "<c-k>" "List possible snippets based on current file
-let g:UltiSnipsUsePythonVersion = 3
+if &runtimepath =~? 'plugged/ultisnips'
+  let g:UltiSnipsExpandTrigger       = "<c-j>"
+  let g:UltiSnipsJumpForwardTrigger  = "<c-j>"
+  let g:UltiSnipsJumpBackwardTrigger = "<c-p>"
+  let g:UltiSnipsListSnippets        = "<c-k>" "List possible snippets based on current file
+  let g:UltiSnipsUsePythonVersion = 3
+endif
 " }}}
 
 " {{{ colorscheme
@@ -345,23 +355,27 @@ endif
 " }}}
 
 " Ripgrep & FZF {{{
+" We can use :grep to directly search files and go into quickfix mode using
+" :cwin
 if executable('rg') " set Rg as the grep command
     " Note we extract the column as well as the file and line number
     set grepprg=rg\ --vimgrep\ --no-heading
     set grepformat=%f:%l:%c:%m,%f:%l:%m
     "set grepformat=%f:%l:%c%m
+
+    " THis is for :Rg command
+    command! -bang -nargs=* Rg
+          \ call fzf#vim#grep(
+          \   'rg --column --line-number --no-heading --colors "path:fg:190,220,255" --colors "line:fg:128,128,128" --smart-case '
+          \   .shellescape(<q-args>), 1, { 'options': '--color hl:123,hl+:222' }, 0)
 endif
 
-let g:rg_command = 'rg --vimgrep -S'
-" Make FZF use rg. THis makes it extremely fast
-let $FZF_DEFAULT_COMMAND = 'rg -l --smart-case ""'
+if &runtimepath =~? 'plugged/fzf.vim'
 
-" THis is for :Rg command
-command! -bang -nargs=* Rg
-  \ call fzf#vim#grep(
-  \   'rg --column --line-number --no-heading --colors "path:fg:190,220,255" --colors "line:fg:128,128,128" --smart-case '.shellescape(<q-args>), 1, { 'options': '--color hl:123,hl+:222' }, 0)
+    let g:rg_command = 'rg --vimgrep -S'
+    " Make FZF use rg. THis makes it extremely fast
+    let $FZF_DEFAULT_COMMAND = 'rg -l --smart-case ""'
 
-if &runtimepath =~? 'fzf.vim'
     augroup hide_fzf_statusline
         autocmd! FileType fzf
         autocmd  FileType fzf set laststatus=0 noruler
@@ -394,7 +408,7 @@ endif
 " }}}
 
 " COC.NVIM {{{
-"if &runtimepath =~? 'plugged/neoclide'
+if &runtimepath =~? 'plugged/coc.nvim'
     let g:coc_global_extensions = [
           \'coc-ultisnips',
           \'coc-snippets',
@@ -551,8 +565,7 @@ endif
 
     " coc-explorer
     nmap <C-n> :CocCommand explorer<CR>
-
-"endif
+endif
 " }}}
 
 " Clipboard {{{
@@ -677,14 +690,17 @@ autocmd BufWritePre * :call TrimWhiteSpace()
 " }}}
 
 " haya14busa/incsearch {{{
+
 " This requires `set hlsearch` which is set above
-let g:incsearch#auto_nohlsearch = 1
-map n  <Plug>(incsearch-nohl-n)
-map N  <Plug>(incsearch-nohl-N)
-map *  <Plug>(incsearch-nohl-*)
-map #  <Plug>(incsearch-nohl-#)
-map g* <Plug>(incsearch-nohl-g*)
-map g# <Plug>(incsearch-nohl-g#)"
+if &runtimepath =~? 'plugged/ultisnips'
+    let g:incsearch#auto_nohlsearch = 1
+    map n  <Plug>(incsearch-nohl-n)
+    map N  <Plug>(incsearch-nohl-N)
+    map *  <Plug>(incsearch-nohl-*)
+    map #  <Plug>(incsearch-nohl-#)
+    map g* <Plug>(incsearch-nohl-g*)
+    map g# <Plug>(incsearch-nohl-g#)"
+endif
 " }}}
 
 " Unload Inbuild provide {{{
@@ -696,15 +712,16 @@ let g:loaded_node_provider = 0
 
 " Neoformat {{{
 " NOTE: stdin: 1 is very imporant. Otherwise .clang-format is not taken
-let g:neoformat_cpp_clangformat = {
-      \ 'exe': 'clang-format',
-      \ 'args': ['-style=file'],
-      \ 'stdin': 1
-      \}
+if &runtimepath =~? 'plugged/neoformat'
+    let g:neoformat_cpp_clangformat = {
+                \ 'exe': 'clang-format',
+                \ 'args': ['-style=file'],
+                \ 'stdin': 1
+                \}
 
-let g:neoformat_enabled_cpp = ['clangformat']
-let g:neoformat_enabled_c = ['clangformat']
-
+    let g:neoformat_enabled_cpp = ['clangformat']
+    let g:neoformat_enabled_c = ['clangformat']
+endif
 " }}}
 
 " Hex {{{
@@ -753,18 +770,25 @@ endfunction
 " }}}
 
 " Python & Autocmd {{{
-let g:python3_host_prog=expand('$VIRTUAL_ENV/bin/python')
-call coc#config("python.pythonPath", expand("$VIRTUAL_ENV/bin/python"))
+if !exists('g:vscode')
+    let g:python3_host_prog=expand('$VIRTUAL_ENV/bin/python')
+    if &runtimepath =~? 'plugged/coc.nvim'
+        call coc#config("python.pythonPath", expand("$VIRTUAL_ENV/bin/python"))
+    endif
+endif
 autocmd FileType python map <buffer> <F5> :w<CR>:exec '!python3' shellescape(@%, 1)<CR>
 autocmd FileType python imap <buffer> <F5> <esc>:w<CR>:exec '!python3' shellescape(@%, 1)<CR>
 
 " QT Console
-command! -nargs=0 RunQtConsole call jobstart("jupyter qtconsole --ConsoleWidget.font_size=15 --style solarized-dark --JupyterWidget.include_other_output=True")
+if &runtimepath =~? 'plugged/nvim-ipy'
 
-let g:ipy_celldef = '^##' " regex for cell start and end
-nnoremap <leader>jqt :RunQtConsole<Enter>
-nnoremap <leader>jk :IPython<Space>--existing<Space>--no-window<Enter>
-nnoremap <leader>jc <Plug>(IPy-RunCell)
-nnoremap <leader>ja <Plug>(IPy-RunAll)
+    command! -nargs=0 RunQtConsole call jobstart("jupyter qtconsole --ConsoleWidget.font_size=15 --style solarized-dark --JupyterWidget.include_other_output=True")
+
+    let g:ipy_celldef = '^##' " regex for cell start and end
+    nnoremap <leader>jqt :RunQtConsole<Enter>
+    nnoremap <leader>jk :IPython<Space>--existing<Space>--no-window<Enter>
+    nnoremap <leader>jc <Plug>(IPy-RunCell)
+    nnoremap <leader>ja <Plug>(IPy-RunAll)
+endif
 " }}}
 
