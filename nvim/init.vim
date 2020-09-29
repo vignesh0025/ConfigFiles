@@ -776,7 +776,12 @@ endfunction
 
 " Python & Autocmd {{{
 if !exists('g:vscode')
-    let g:python3_host_prog=expand('$VIRTUAL_ENV/bin/python')
+    " Windows has no virtualenv
+    if has('win32')
+        let g:python3_host_prog=expand('C:\Users\Vignesh\PY3\Scripts\python.exe')
+    else
+        let g:python3_host_prog=expand('$VIRTUAL_ENV/bin/python')
+    endif
     if &runtimepath =~? 'plugged/coc.nvim'
         call coc#config("python.pythonPath", expand("$VIRTUAL_ENV/bin/python"))
     endif
@@ -797,3 +802,9 @@ if &runtimepath =~? 'plugged/nvim-ipy'
 endif
 " }}}
 
+if exists('g:nvy')
+  set guifont=FiraCode\ NF:h12
+endif
+
+" temp
+set path+=**
