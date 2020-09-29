@@ -169,7 +169,12 @@ nnoremap <Leader>0 :10b<CR>
 " }}}
 
 " vim-plug {{{
-call plug#begin('~/.config/nvim/plugged')
+let g:plugged_path = '~/.config/nvim/plugged'
+if has('win32')
+    call plug#begin()
+else
+    call plug#begin(g:plugged_path)
+endif
 
 Plug 'sheerun/vim-polyglot'
 Plug 'lifepillar/vim-cheat40'
