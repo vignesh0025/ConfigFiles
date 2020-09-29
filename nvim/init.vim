@@ -288,13 +288,13 @@ call plug#end()
 " }}} vim-plug
 
 " Rainbox Bracket {{{
-if &runtimepath =~? 'plugged/rainbow'
+if &runtimepath =~? 'rainbow'
   let g:rainbow_active = 1 "set to 0 if you want to enable it later via :RainbowToggle
 endif
 " }}}
 
 " Airline {{{
-if &runtimepath =~? 'plugged/vim-airline'
+if &runtimepath =~? 'vim-airline'
   let g:airline_powerline_fonts = 1
   let g:airline#extensions#tabline#enabled = 1
   let g:airline#extensions#tabline#buffer_nr_show = 1
@@ -302,7 +302,7 @@ endif
 " }}}
 
 " Cpp Enhanced Highlighting {{{
-if &runtimepath =~? 'plugged/vim-cpp-enhanced-highlight'
+if &runtimepath =~? 'vim-cpp-enhanced-highlight'
   let g:cpp_class_scope_highlight = 1
   let g:cpp_class_decl_highlight = 1
   let g:cpp_class_scope_highlight = 1
@@ -314,14 +314,14 @@ endif
 " }}}
 
 " Flake8 {{{
-if &runtimepath =~? 'plugged/vim-flake8'
+if &runtimepath =~? 'vim-flake8'
   let g:flake8_show_in_gutter=1
   let g:flake8_show_in_file=1
 endif
 " }}}
 
 " UltiSnips {{{
-if &runtimepath =~? 'plugged/ultisnips'
+if &runtimepath =~? 'ultisnips'
   let g:UltiSnipsExpandTrigger       = "<c-j>"
   let g:UltiSnipsJumpForwardTrigger  = "<c-j>"
   let g:UltiSnipsJumpBackwardTrigger = "<c-p>"
@@ -331,7 +331,7 @@ endif
 " }}}
 
 " {{{ colorscheme
-if &runtimepath =~? 'plugged/gruvbox-material'
+if &runtimepath =~? 'gruvbox-material'
     let $NVIM_TUI_ENABLE_TRUE_COLOR=1
     let g:gruvbox_contrast_dark='hard'
     let g:gruvbox_contrast_light='hard'
@@ -375,7 +375,7 @@ if executable('rg') " set Rg as the grep command
           \   .shellescape(<q-args>), 1, { 'options': '--color hl:123,hl+:222' }, 0)
 endif
 
-if &runtimepath =~? 'plugged/fzf.vim'
+if &runtimepath =~? 'fzf.vim'
 
     let g:rg_command = 'rg --vimgrep -S'
     " Make FZF use rg. THis makes it extremely fast
@@ -413,7 +413,7 @@ endif
 " }}}
 
 " COC.NVIM {{{
-if &runtimepath =~? 'plugged/coc.nvim'
+if &runtimepath =~? 'coc.nvim'
     let g:coc_global_extensions = [
           \'coc-ultisnips',
           \'coc-snippets',
