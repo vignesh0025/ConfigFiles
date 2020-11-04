@@ -6,6 +6,7 @@ autocmd FileType vim setlocal foldmethod=marker foldlevel=0
 augroup END
 " }}}
 
+
 " Set Options {{{
 if &compatible
   set nocompatible
@@ -13,14 +14,14 @@ endif
 
 " Allow saving of files as sudo when I forgot to start vim using sudo
 cmap w!! w !sudo tee > /dev/null %
-set colorcolumn=80
+set colorcolumn=96
 
 set mouse=a                 " let the mouse wheel scroll page, etc
 syntax enable               " Enable Syntax Processing
 
 set nostartofline           " Do not jump to first character with page commands.
 set relativenumber          " Set Relative File Number
-set textwidth=80            " Set linewidth to existing using `gq`
+set textwidth=96            " Set linewidth to existing using `gq`
 set splitright              " Open new split panes to right and below
 set splitbelow
 set noshowmode              " hide the mode (airline will show instead)
@@ -53,7 +54,7 @@ if has('nvim')
     set wildoptions=pum
 endif
 
-set hidden
+set hidden                   " Have unsaved buffer somewhere is the session
 set number                   " show line number
 set showcmd                  " show command in bottom bar
 set cursorline               " highlight current line
@@ -82,6 +83,12 @@ set foldmethod=syntax   " fold based on indentation
 nnoremap <c-z> <nop>
 nnoremap Q <Nop>
 nnoremap <leader>o o<esc>k
+
+" This is super helpful
+" In virual mode while pasting, don't replace the buffer contents
+vnoremap <leader>p "_dP
+vnoremap <leader>+p "_d+P
+nnoremap \ ,
 
 vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '>-2<CR>gv=gv
@@ -127,6 +134,7 @@ nnoremap <c-h> <c-w><c-h>
 
 " Leader based Mappings {{{
 let mapleader=","   " leader is comma
+let maplocalleader="\<space>"
 
 " edit/reload vimrc
 nmap <leader>ev :e $MYVIMRC<CR>
@@ -175,6 +183,10 @@ if has('win32')
 else
     call plug#begin(g:plugged_path)
 endif
+
+Plug 'lervag/vimtex'
+Plug 'dense-analysis/ale'
+Plug 'ludovicchabant/vim-gutentags'
 
 Plug 'sheerun/vim-polyglot'
 Plug 'lifepillar/vim-cheat40'
@@ -295,9 +307,14 @@ endif
 
 " Airline {{{
 if &runtimepath =~? 'vim-airline'
-  let g:airline_powerline_fonts = 1
-  let g:airline#extensions#tabline#enabled = 1
-  let g:airline#extensions#tabline#buffer_nr_show = 1
+    let g:airline_powerline_fonts = 1
+    let g:airline#extensions#tabline#enabled = 1
+    let g:airline#extensions#tabline#buffer_nr_show = 1
+    let g:airline#extensions#ale#enabled = 1
+    let g:airline#extensions#gutentags#enabled = 1
+    let g:airline#extensions#fugitiveline#enabled = 1
+    let g:airline#extensions#fzf#enabled = 1
+    let g:airline#extensions#vimtex#enabled = 1
 endif
 " }}}
 
@@ -802,9 +819,60 @@ if &runtimepath =~? 'plugged/nvim-ipy'
 endif
 " }}}
 
+
+if &runtimepath =~? 'vimtex'
+  " let g:vimtex_compiler_method = 'tectonic'
+  " let g:vimtex_compiler_method = 'latexrun'
+  let g:tex_flavor = 'latex'
+
+  nnoremap <localleader>t :call vimtex#fzf#run()<cr>
+
+  let g:vimtex_view_general_viewer = 'sumatraPDF.exe'
+  let g:vimtex_view_general_options = '-reuse-instance @pdf'
+  let g:vimtex_view_general_options_latexmk = '-reuse-instance'
+  " augroup Vimtex
+  "   autocmd!
+  "   autocmd QuickFixCmdPost lmake lwindow
+  " augroup END
+  " if has('win32')
+    " let g:vimtex_view_method = 'mupdf'
+    " let g:vimtex_view_general_viewer = 'mupdf'
+  " let g:vimtex_view_mupdf_options = '-r 200'
+    " let g:vimtex_view_general_viewer = 'SumatraPDF.exe'
+    " let g:vimtex_view_general_options = '-reuse-instance @pdf'
+    " let g:vimtex_view_general_options_latexmk = '-reuse-instance'
+    " let g:vimtex_view_general_options
+    "             \ = '-reuse-instance -forward-search @tex @line @pdf'
+    "             \ . ' -inverse-search "' . exepath(v:progpath)
+    "             \ . ' --servername ' . v:servername
+    "             \ . ' --remote-send \"^<C-\^>^<C-n^>'
+    "             \ . ':execute ''drop '' . fnameescape(''\%f'')^<CR^>'
+    "             \ . ':\%l^<CR^>:normal\! zzzv^<CR^>'
+    "             \ . ':call remote_foreground('''.v:servername.''')^<CR^>^<CR^>\""'
+  " endif
+  "
+  augroup Texspell
+    autocmd!
+    autocmd! BufEnter,BufNewFile *.tex setlocal spell spelllang=en_us
+  augroup end
+
+  let g:vimtex_latexmk_options = '-pdf -verbose -bibtex -file-line-error -synctex=1 -interaction=nonstopmode'
+  if has('nvim')
+    "let g:vimtex_compiler_progname = 'nvr'
+    let g:vimtex_latexmk_progname = 'nvr'
+  " else
+  "   if empty(v:servername) && exists('*remote_startserver')
+  "     call remote_startserver('VIM')
+  "   endif
+  endif
+endif
+
+nmap <silent> [n <Plug>(ale_previous_wrap)
+nmap <silent> ]n <Plug>(ale_next_wrap)
+
+
 if exists('g:nvy')
   set guifont=FiraCode\ NF:h12
 endif
-
 " temp
 set path+=**
