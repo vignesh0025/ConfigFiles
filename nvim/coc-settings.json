@@ -4,8 +4,8 @@
     //  This is done inside .vimrc to use an environment variable
     "clangd.checkUpdates": true,
     "clangd.semanticHighlighting": true,
-    "clangd.path": "/home/vignesh/.config/coc/extensions/coc-clangd-data/install/10.0.0/clangd_10.0.0/bin/clangd",
-    "explorer.keyMappings": {
+    "clangd.path": "/home/vignesh/.config/coc/extensions/coc-clangd-data/install/11.0.0/clangd_11.0.0/bin/clangd",
+    "explorer.keyMappings.global": {
         "v": "open:vsplit"
     },
     "explorer.icon.enableNerdfont":true,
@@ -22,7 +22,36 @@
     "coc.source.file.shortcut": "File",
     "snippets.shortcut": "Snippets",
     "python.jediShortcut": "Jedi",
-    "java.home": "/home/vignesh/jdk1.8.0_251",
-    "java.import.gradle.enabled": true,
-    "java.import.gradle.wrapper.enabled": true
+    "suggest.echodocSupport": true,
+    "diagnostic.displayByAle": true,
+    "languageserver": {
+        "lua": {
+            "command": "~/Data/lua-language-server/bin/Linux/lua-language-server",
+            "args": ["-E", "-e", "LANG=en", "/home/vignesh/Data/lua-language-server/main.lua"],
+            "filetypes": ["lua"],
+            "rootPatterns": [".git/"],
+            "settings": {
+                "Lua": {
+                    "workspace": {
+                        "library": {
+                            "/home/vignesh/Data/nvim-plugin-lua/nvim-lua-stdlib": true
+                        },
+                        "maxPreload": 2000,
+                        "preloadFileSize": 1000
+                    },
+                    "runtime": {
+                        "version": "Lua 5.3"
+                    },
+                    "diagnostics": {
+                        "enable": true,
+                        "globals": ["hs", "vim", "it", "describe", "before_each", "after_each"],
+                        "disable": ["lowercase-global"]
+                    },
+                    "completion": {
+                        "keywordSnippet": "Disable"
+                    }
+                }
+            }
+        }
+    }
 }

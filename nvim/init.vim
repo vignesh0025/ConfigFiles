@@ -6,7 +6,6 @@ autocmd FileType vim setlocal foldmethod=marker foldlevel=0
 augroup END
 " }}}
 
-
 " Set Options {{{
 if &compatible
   set nocompatible
@@ -16,16 +15,23 @@ endif
 cmap w!! w !sudo tee > /dev/null %
 set colorcolumn=96
 
+" if exists('+termguicolors')
+  let &t_8f="\<Esc>[38;2;%lu;%lu;%lum"
+  let &t_8b="\<Esc>[48;2;%lu;%lu;%lum"
+  set termguicolors
+" endif
+
+"set t_Co=16
 set mouse=a                 " let the mouse wheel scroll page, etc
 syntax enable               " Enable Syntax Processing
 
+set cmdheight=2
 set nostartofline           " Do not jump to first character with page commands.
 set relativenumber          " Set Relative File Number
-set textwidth=96            " Set linewidth to existing using `gq`
+autocmd! FileType tex set textwidth=96            " Set linewidth to existing using `gq`
 set splitright              " Open new split panes to right and below
 set splitbelow
 set noshowmode              " hide the mode (airline will show instead)
-set termguicolors           " true color support
 set guioptions=             " remove scrollbars, etc
 set scrolloff=1             " start scrolling when near the last line/col
 set sidescrolloff=5         " Scrolling Offset
@@ -79,10 +85,19 @@ set foldmethod=syntax   " fold based on indentation
 
 " Command & Mappings {{{
 
+" ToggleQuickFix
+function! ToggleQuickFix()
+    if empty(filter(getwininfo(), 'v:val.quickfix'))
+        copen
+    else
+        cclose
+    endif
+endfunction
+nnoremap <F6> :call ToggleQuickFix()<cr>
+
 " Disable minimise
 nnoremap <c-z> <nop>
 nnoremap Q <Nop>
-nnoremap <leader>o o<esc>k
 
 " This is super helpful
 " In virual mode while pasting, don't replace the buffer contents
@@ -130,6 +145,12 @@ nnoremap <c-k> <c-w><c-k>
 nnoremap <c-l> <c-w><c-l>
 nnoremap <c-h> <c-w><c-h>
 
+" split navigation
+nnoremap <m-j> <c-w><c-j>
+nnoremap <m-k> <c-w><c-k>
+nnoremap <m-l> <c-w><c-l>
+nnoremap <m-h> <c-w><c-h>
+
 " }}}
 
 " Leader based Mappings {{{
@@ -176,6 +197,24 @@ nnoremap <Leader>0 :10b<CR>
 
 " }}}
 
+" ALE {{{
+" We shouldn't check for runtimepath path
+let g:ale_disable_lsp = 1
+let g:ale_set_quickfix = 1
+let g:ale_fixers = {
+      \   'cpp': [
+      \       'clang-format',
+      \   ],
+      \   'python': [
+      \        'autopep8'
+      \   ]
+      \}
+nnoremap <leader>lf :ALEFix<CR>
+
+nmap <silent> [l <Plug>(ale_previous_wrap)
+nmap <silent> ]l <Plug>(ale_next_wrap)
+" }}}
+
 " vim-plug {{{
 let g:plugged_path = '~/.config/nvim/plugged'
 if has('win32')
@@ -183,6 +222,8 @@ if has('win32')
 else
     call plug#begin(g:plugged_path)
 endif
+
+Plug 'chiphogg/vim-prototxt'
 
 Plug 'lervag/vimtex'
 Plug 'dense-analysis/ale'
@@ -193,6 +234,12 @@ Plug 'lifepillar/vim-cheat40'
 
 Plug 'christoomey/vim-tmux-runner'
 " Plug 'justinmk/vim-sneak'
+
+" Show tags in right
+Plug 'majutsushi/tagbar'
+
+" To mazimize split
+Plug 'szw/vim-maximizer'
 "
 " Plugin for Neoformat that formats all programs :Neoformat
 Plug 'sbdchd/neoformat'
@@ -217,8 +264,9 @@ Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets' " Works with ultisnips to provide a list
 
 " My Own Plugins for CMAKE
-Plug '~/Data/vimrcs/vim-cmake'
+" Plug '~/Data/vimrcs/vim-cmake'
 " Plug 'vignesh0025/vim-cmake'
+Plug 'cdelledonne/vim-cmake'
 
 " Provides more features around / and ? and all
 Plug 'haya14busa/incsearch.vim'
@@ -226,6 +274,12 @@ Plug 'haya14busa/incsearch.vim'
 Plug 'chriskempson/base16-vim'
 " Plug 'morhetz/gruvbox'
 Plug 'sainnhe/gruvbox-material'
+Plug 'NLKNguyen/papercolor-theme'
+Plug 'ayu-theme/ayu-vim'
+Plug 'whatyouhide/vim-gotham'
+Plug 'nanotech/jellybeans.vim'
+Plug 'arcticicestudio/nord-vim'
+" Plug 'altercation/vim-colors-solarized'
 
 Plug 'ryanoasis/vim-devicons'
 Plug 'unblevable/quick-scope'
@@ -261,9 +315,14 @@ Plug 'xolox/vim-notes'
 " editing
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
+
+" Align items in good tabular format :Tab /=   " Align using equal =
 Plug 'godlygeek/tabular'
+
+" Give repeat support using dot(.) for different operations
 Plug 'tpope/vim-repeat'
 
+" Shortcut mapping using brackets like ]<space> and [<space> and yob
 Plug 'tpope/vim-unimpaired'
 
 " better statusline
@@ -277,7 +336,7 @@ Plug 'tpope/vim-sleuth'
 Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
 
-Plug 'bfredl/nvim-ipy'
+" Plug 'bfredl/nvim-ipy'
 
 "Plug 'gabrielelana/vim-markdown'
 "Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } }
@@ -293,11 +352,53 @@ Plug 'michaeljsmith/vim-indent-object'
 " Plug 'vhdirk/vim-cmake'
 Plug 'easymotion/vim-easymotion'
 
+" This plugin outputs function signature in command line from coc.nvim
+Plug 'Shougo/echodoc.vim'
+
 "" Remap for do codeAction of selected region
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
+if has('nvim-0.5.0')
+  Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+  Plug 'nvim-treesitter/playground'
+  let g:vimsyn_embed = 'l'
+  Plug '~/Data/nvim-plugin-lua/plugins/ColorChange'
+endif
+
 call plug#end()
 " }}} vim-plug
+
+if has('nvim-0.5.0')
+lua <<EOF
+require "nvim-treesitter.configs".setup {
+  playground = {
+    enable = true,
+    disable = {},
+    updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
+    persist_queries = false -- Whether the query persists across vim sessions
+  }
+}
+EOF
+endif
+
+" ECHODOC {{{
+if &runtimepath =~? 'echodoc'
+  let g:echodoc#enable_at_startup = 1
+endif
+" }}}
+
+" Vim-Maximiser {{{
+if &runtimepath =~? 'vim-maximizer'
+      let g:maximizer_set_default_mapping = 0
+      nnoremap <silent> <c-w>z :MaximizerToggle!<CR>
+endif
+"}}}
+
+" Tag Bar {{{
+if &runtimepath =~? 'tagbar'
+  nmap <F9> :TagbarToggle<CR>
+endif
+" }}}
 
 " Rainbox Bracket {{{
 if &runtimepath =~? 'rainbow'
@@ -308,6 +409,8 @@ endif
 " Airline {{{
 if &runtimepath =~? 'vim-airline'
     let g:airline_powerline_fonts = 1
+
+    " Buffers at top is shown by the below
     let g:airline#extensions#tabline#enabled = 1
     let g:airline#extensions#tabline#buffer_nr_show = 1
     let g:airline#extensions#ale#enabled = 1
@@ -347,35 +450,6 @@ if &runtimepath =~? 'ultisnips'
 endif
 " }}}
 
-" {{{ colorscheme
-if &runtimepath =~? 'gruvbox-material'
-    let $NVIM_TUI_ENABLE_TRUE_COLOR=1
-    let g:gruvbox_contrast_dark='hard'
-    let g:gruvbox_contrast_light='hard'
-
-    " if strftime("%H") < 18 && strftime("%H") > 9
-    "   set background=light
-    " else
-    "   set background=dark
-    " endif
-
-    set background=dark
-
-    let g:gruvbox_italic = 1
-    let g:gruvbox_sign_column='bg0'
-    let g:airline_theme='gruvbox_material'
-
-    colorscheme gruvbox-material
-
-    " match the fold column colors to the line number column
-    " must come after colorscheme gruvbox
-    highlight clear FoldColumn
-    highlight! link FoldColumn LineNr
-
-    " hi Normal guibg=NONE ctermbg=NONE
-endif
-" }}}
-
 " Ripgrep & FZF {{{
 " We can use :grep to directly search files and go into quickfix mode using
 " :cwin
@@ -396,7 +470,8 @@ if &runtimepath =~? 'fzf.vim'
 
     let g:rg_command = 'rg --vimgrep -S'
     " Make FZF use rg. THis makes it extremely fast
-    let $FZF_DEFAULT_COMMAND = 'rg -l --smart-case ""'
+    " let $FZF_DEFAULT_COMMAND = 'rg --files -l --smart-case'
+    let $FZF_DEFAULT_COMMAND = ''
 
     augroup hide_fzf_statusline
         autocmd! FileType fzf
@@ -419,10 +494,12 @@ if &runtimepath =~? 'fzf.vim'
     " mappings
     " nnoremap <C-f> :BLines<CR>
 
-    nnoremap <F2> :Commands<CR>
-    nnoremap <F3> :Buffer<CR>
-    nnoremap <F6> :Maps<CR>
-    nnoremap <F12> :BCommits<CR>
+    nnoremap <F7> :Maps<CR>
+    nnoremap <F8> :Commands<CR>
+
+    nnoremap <F10> :BTags<CR>
+    nnoremap <F11> :BCommits<CR>
+    nnoremap <F12> :Commits<CR>
 
     " don't highlight the current line and selection column
     let g:fzf_colors = {'bg+': ['bg', 'Normal']}
@@ -466,14 +543,14 @@ if &runtimepath =~? 'coc.nvim'
     nmap <silent> gr <Plug>(coc-references)
 
     " Use K to show documentation in preview window.
-    nnoremap <silent> K :call <SID>show_documentation()<CR>
+    " nnoremap <silent> K :call <SID>show_documentation()<CR>
     set keywordprg=:call\ <SID>show_documentation()
     function! s:show_documentation()
-        if (index(['vim','help'], &filetype) >= 0)
-            execute 'h '.expand('<cword>')
-        else
-            call CocAction('doHover')
-        endif
+        " if (index(['vim','help'], &filetype) >= 0)
+        execute 'h '.expand('<cword>')
+        " else
+            " call CocAction('doHover')
+        " endif
     endfunction
 
     " Use tab for trigger completion with characters ahead and navigate.
@@ -546,6 +623,7 @@ if &runtimepath =~? 'coc.nvim'
     " Add `:OR` command for organize imports of the current buffer.
     command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
 
+    nnoremap <silent> <F4>      :call CocAction('runCommand', 'clangd.switchSourceHeader')<cr>
     " Mappings using CoCList:
     " Show all diagnostics.
     nnoremap <silent> <space>i  :<C-u>CocList diagnostics<cr>
@@ -608,7 +686,7 @@ let g:clipboard = {
          \ }
 endif
 
-set clipboard+=unnamedplus
+" set clipboard+=unnamedplus
 " }}}
 
 "  Italics with tmux fix {{{
@@ -636,32 +714,13 @@ endfunction
 " augroup filetype_c_cpp
 " " map <F4> :e %:p:s,.h$,.X123X,:s,.cpp$,.h,:s,.X123X$,.cpp,<CR>
 " autocmd!
-autocmd BufEnter,BufNewFile *.c,*,cpp,*.h command! -nargs=1 VSplit :call MySplit("<args>")
-autocmd BufEnter,BufNewFile *.c,*,cpp,*.h map <F4> :VSplit %:p:s,.h$,.X123X,:s,.cpp$,.h,:s,.X123X$,.cpp,<CR>
+"autocmd BufEnter,BufNewFile *.c,*,cpp,*.h command! -nargs=1 VSplit :call MySplit("<args>")
+"autocmd BufEnter,BufNewFile *.c,*,cpp,*.h map <F4> :VSplit %:p:s,.h$,.X123X,:s,.cpp$,.h,:s,.X123X$,.cpp,<CR>
 " augroup end
 
 " Formatting for CPP
 autocmd FileType cpp set formatprg=clang-format
 autocmd FileType cmake set formatprg=clang-format
-
-" }}}
-
-" Zoom / Restore window {{{
-function! s:ZoomToggle() abort
-    if exists('t:zoomed') && t:zoomed
-        execute t:zoom_winrestcmd
-        let t:zoomed = 0
-    else
-        let t:zoom_winrestcmd = winrestcmd()
-        resize
-        vertical resize
-        let t:zoomed = 1
-    endif
-endfunction
-command! ZoomToggle call s:ZoomToggle()
-
-" Tmux like zoom
-nnoremap <silent> <c-w>z :ZoomToggle<CR>
 
 " }}}
 
@@ -748,7 +807,7 @@ endif
 
 " Hex {{{
 " ex command for toggling hex mode - define mapping if desired
-command -bar Hexmode call ToggleHex()
+command! -bar Hexmode call ToggleHex()
 
 " helper function to toggle hex mode
 function ToggleHex()
@@ -820,24 +879,71 @@ endif
 " }}}
 
 
+" {{{ colorscheme
+if &runtimepath =~? 'gruvbox-material'
+    let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+
+    " let g:gruvbox_contrast_dark='hard'
+    " let g:gruvbox_contrast_light='hard'
+    " let g:gruvbox_italic = 1
+    let g:gruvbox_sign_column='bg0'
+
+    " if strftime("%H") < 18 && strftime("%H") > 9
+    "   set background=light
+    " else
+    "   set background=dark
+    " endif
+
+    let g:gruvbox_material_background = 'hard'
+    let g:gruvbox_material_enable_italic = 1
+    let g:gruvbox_material_diagnostic_line_highlight = 1
+
+
+    if has('nvim-0.5.0')
+        lua require('vd-plugin').set_init_theme()
+    else
+        set background=dark
+        let g:airline_theme='gruvbox_material'
+        colorscheme gruvbox-material
+        " match the fold column colors to the line number column
+        " must come after colorscheme gruvbox
+        highlight clear FoldColumn
+        highlight! link FoldColumn LineNr
+    endif
+endif
+" }}}
+
+" Vim - Figituve {{{
+nnoremap <leader>gd :Gvdiffsplit<CR>
+nnoremap <leader>gs :Gstatus<CR>
+nnoremap <leader>gb :Gblame<CR>
+nnoremap <leader>gp :Gpush<CR>
+" }}}
+
+" Vimtex {{{
 if &runtimepath =~? 'vimtex'
   " let g:vimtex_compiler_method = 'tectonic'
   " let g:vimtex_compiler_method = 'latexrun'
-  let g:tex_flavor = 'latex'
 
+  let g:tex_flavor = 'latex'
+  let g:Tex_ViewRule_pdf =  'zathura'
+  let g:vimtex_view_method = 'zathura'
+  let g:vimtex_quickfix_autoclose_after_keystrokes = 2
+  "let g:vimtex_quickfix_open_on_warning = 0
+  let g:vimtex_compiler_progname = 'nvr'
+  let g:vimtex_toc_config = {'split_pos':'vert botright'}
   nnoremap <localleader>t :call vimtex#fzf#run()<cr>
 
-  let g:vimtex_view_general_viewer = 'sumatraPDF.exe'
-  let g:vimtex_view_general_options = '-reuse-instance @pdf'
-  let g:vimtex_view_general_options_latexmk = '-reuse-instance'
+  " let g:vimtex_view_general_viewer = 'sumatraPDF.exe'
+  " let g:vimtex_view_general_options = '-reuse-instance @pdf'
+  " let g:vimtex_view_general_options_latexmk = '-reuse-instance'
   " augroup Vimtex
   "   autocmd!
   "   autocmd QuickFixCmdPost lmake lwindow
   " augroup END
   " if has('win32')
-    " let g:vimtex_view_method = 'mupdf'
     " let g:vimtex_view_general_viewer = 'mupdf'
-  " let g:vimtex_view_mupdf_options = '-r 200'
+    " let g:vimtex_view_mupdf_options = '-r 200'
     " let g:vimtex_view_general_viewer = 'SumatraPDF.exe'
     " let g:vimtex_view_general_options = '-reuse-instance @pdf'
     " let g:vimtex_view_general_options_latexmk = '-reuse-instance'
@@ -867,12 +973,56 @@ if &runtimepath =~? 'vimtex'
   endif
 endif
 
-nmap <silent> [n <Plug>(ale_previous_wrap)
-nmap <silent> ]n <Plug>(ale_next_wrap)
 
+" }}}
 
 if exists('g:nvy')
   set guifont=FiraCode\ NF:h12
 endif
+
+function! ChangeTheme()
+    if g:colors_name =~? 'gruvbox-material'
+        set background=light
+        colorscheme PaperColor
+        AirlineTheme papercolor
+    elseif g:colors_name =~? 'PaperColor'
+        set background=dark
+        colorscheme gotham256
+        AirlineTheme gotham256
+    elseif g:colors_name =~? 'gotham256'
+        set background=dark
+        colorscheme jellybeans
+        AirlineTheme jellybeans
+    elseif g:colors_name =~? 'jellybeans'
+        set background=dark
+        colorscheme nord
+        AirlineTheme nord
+    else
+        set background=dark
+        colorscheme gruvbox-material
+        AirlineTheme gruvbox_material
+    endif
+    echo g:colors_name
+endfunction
+
+function! SaveColorSchemeSettings()
+  echo g:colors_name > 'file'
+endfunction
+" function! UpdateBackground()
+"    if g:colors_name =~? 'ayu'
+"         if &background=~?'dark'
+"             let ayucolor="mirage"
+"         else
+"             let ayucolor="light"
+"         endif
+"         colorscheme ayu
+"     endif
+" endfunction
+
+noremap <silent> <F2> :call ChangeTheme()<CR>
+" source ~/.config/nvim/autoload/setcolors.vim
+
+" autocmd OptionSet background call UpdateBackground()
+
 " temp
 set path+=**
